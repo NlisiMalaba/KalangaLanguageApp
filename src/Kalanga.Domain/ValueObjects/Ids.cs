@@ -155,3 +155,16 @@ public readonly record struct RequestId
 
     public override string ToString() => Value.ToString();
 }
+
+public readonly record struct SyncCheckpointId
+{
+    public Guid Value { get; }
+
+    private SyncCheckpointId(Guid value) => Value = value;
+
+    public static SyncCheckpointId New() => new(Guid.CreateVersion7());
+
+    public static SyncCheckpointId From(Guid value) => new(Guard.NotEmpty(value, nameof(value)));
+
+    public override string ToString() => Value.ToString();
+}
