@@ -1,0 +1,58 @@
+# Project-local (not source)
+.cursor/
+planning/
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDE / editor
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# .NET
+bin/
+obj/
+[Bb]uild/
+[Ll]og/
+*.dll
+*.pdb
+*.cache
+project.lock.json
+artifacts/
+TestResults/
+*.nupkg
+
+# Secrets / env
+.appsettings.*.local.json
+appsettings.*.local.json
+*.pfx
+.env
+.env.*
+!.env.example
+
+# Expo / Node
+node_modules/
+.expo/
+.expo-shared/
+dist/
+web-build/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Coverage / tests
+coverage/
+*.lcov
+.nyc_output/
