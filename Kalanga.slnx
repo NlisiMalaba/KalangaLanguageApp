@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Kalanga.Api/Kalanga.Api.csproj" />
+    <Project Path="src/Kalanga.Application/Kalanga.Application.csproj" />
+    <Project Path="src/Kalanga.Domain/Kalanga.Domain.csproj" />
+    <Project Path="src/Kalanga.Infrastructure/Kalanga.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Kalanga.Tests/Kalanga.Tests.csproj" />
+  </Folder>
+</Solution>

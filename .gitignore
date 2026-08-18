@@ -29,12 +29,15 @@ TestResults/
 *.nupkg
 
 # Secrets / env
-.appsettings.*.local.json
-appsettings.*.local.json
+**/appsettings.json
+**/appsettings.Development.json
+**/appsettings.*.local.json
 *.pfx
 .env
 .env.*
 !.env.example
+!**/appsettings.example.json
+!**/appsettings.*.example.json
 
 # Expo / Node
 node_modules/
