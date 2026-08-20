@@ -4,7 +4,7 @@ namespace Kalanga.Domain.Entities;
 
 public sealed class Phrase
 {
-    private Phrase(
+    internal Phrase(
         PhraseId id,
         LanguageId languageId,
         LessonId lessonId,

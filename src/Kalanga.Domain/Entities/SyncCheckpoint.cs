@@ -4,7 +4,7 @@ namespace Kalanga.Domain.Entities;
 
 public sealed class SyncCheckpoint
 {
-    private SyncCheckpoint(
+    internal SyncCheckpoint(
         SyncCheckpointId id,
         LanguageId languageId,
         UserId userId,

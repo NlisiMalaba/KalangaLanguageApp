@@ -7,7 +7,7 @@ public sealed class ContentPack
 {
     private readonly HashSet<LessonId> _lessonIds;
 
-    private ContentPack(
+    internal ContentPack(
         ContentPackId id,
         LanguageId languageId,
         string name,

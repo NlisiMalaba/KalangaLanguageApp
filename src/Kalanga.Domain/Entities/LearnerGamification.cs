@@ -5,7 +5,7 @@ namespace Kalanga.Domain.Entities;
 
 public sealed class LearnerGamification
 {
-    private LearnerGamification(
+    internal LearnerGamification(
         LearnerGamificationId id,
         LanguageId languageId,
         UserId userId,

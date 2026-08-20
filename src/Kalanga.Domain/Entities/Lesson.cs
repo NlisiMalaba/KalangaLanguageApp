@@ -6,7 +6,7 @@ namespace Kalanga.Domain.Entities;
 
 public sealed class Lesson
 {
-    private Lesson(
+    internal Lesson(
         LessonId id,
         LanguageId languageId,
         string title,

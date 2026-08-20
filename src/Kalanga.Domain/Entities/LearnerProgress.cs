@@ -4,7 +4,7 @@ namespace Kalanga.Domain.Entities;
 
 public sealed class LearnerProgress
 {
-    private LearnerProgress(
+    internal LearnerProgress(
         LearnerProgressId id,
         LanguageId languageId,
         UserId userId,

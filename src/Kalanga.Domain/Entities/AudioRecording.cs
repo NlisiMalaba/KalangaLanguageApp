@@ -6,7 +6,7 @@ namespace Kalanga.Domain.Entities;
 
 public sealed class AudioRecording
 {
-    private AudioRecording(
+    internal AudioRecording(
         AudioRecordingId id,
         LanguageId languageId,
         PhraseId? phraseId,

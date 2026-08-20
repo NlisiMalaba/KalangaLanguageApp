@@ -5,7 +5,7 @@ namespace Kalanga.Domain.Entities;
 
 public sealed class User
 {
-    private User(
+    internal User(
         UserId id,
         LanguageId languageId,
         string email,

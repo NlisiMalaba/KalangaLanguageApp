@@ -6,7 +6,7 @@ namespace Kalanga.Domain.Entities;
 
 public sealed class Request
 {
-    private Request(
+    internal Request(
         RequestId id,
         LanguageId languageId,
         UserId submitterId,

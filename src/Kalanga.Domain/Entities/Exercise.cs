@@ -5,7 +5,7 @@ namespace Kalanga.Domain.Entities;
 
 public sealed class Exercise
 {
-    private Exercise(
+    internal Exercise(
         ExerciseId id,
         LanguageId languageId,
         LessonId lessonId,

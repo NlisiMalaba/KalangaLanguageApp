@@ -4,7 +4,7 @@ namespace Kalanga.Domain.Entities;
 
 public sealed class LanguageVariation
 {
-    private LanguageVariation(
+    internal LanguageVariation(
         LanguageVariationId id,
         LanguageId languageId,
         PhraseId phraseId,

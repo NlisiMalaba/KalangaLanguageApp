@@ -4,7 +4,7 @@ namespace Kalanga.Domain.Entities;
 
 public sealed class SpacedRepetitionRecord
 {
-    private SpacedRepetitionRecord(
+    internal SpacedRepetitionRecord(
         SpacedRepetitionRecordId id,
         LanguageId languageId,
         UserId userId,
