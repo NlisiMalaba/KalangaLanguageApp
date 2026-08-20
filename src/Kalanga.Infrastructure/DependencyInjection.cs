@@ -1,5 +1,4 @@
 using Kalanga.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,19 +14,7 @@ public static class DependencyInjection
             ?? throw new InvalidOperationException("Connection string 'PostgreSQL' is not configured.");
 
         services.AddDbContext<KalangaDbContext>(options =>
-        {
-            options.UseNpgsql(
-                connectionString,
-                npgsql =>
-                {
-                    npgsql.MigrationsAssembly(typeof(KalangaDbContext).Assembly.FullName);
-                    npgsql.CommandTimeout(30);
-                    npgsql.EnableRetryOnFailure(
-                        maxRetryCount: 3,
-                        maxRetryDelay: TimeSpan.FromSeconds(5),
-                        errorCodesToAdd: null);
-                });
-        });
+            KalangaDbContextOptions.Configure(options, connectionString));
 
         return services;
     }

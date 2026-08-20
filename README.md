@@ -121,3 +121,6 @@ License will be published with the first public source drop. Until then, treat t
 Come learn. Come teach. Come build.
 
 [github.com/NlisiMalaba/KalangaLanguageApp](https://github.com/NlisiMalaba/KalangaLanguageApp)
+
+
+dotnet ef database update --project src/Kalanga.Infrastructure --startup-project src/Kalanga.Api
