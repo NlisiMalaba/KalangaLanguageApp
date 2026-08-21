@@ -1,14 +1,16 @@
 using System.Text;
-using Kalanga.Api.Configuration;
+using Kalanga.Api.ExceptionHandling;
 using Kalanga.Api.Middleware;
 using Kalanga.Application;
 using Kalanga.Infrastructure;
+using Kalanga.Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<DomainExceptionHandler>();
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
@@ -23,7 +25,6 @@ if (string.IsNullOrWhiteSpace(jwtOptions.SigningKey) || Encoding.UTF8.GetByteCou
     throw new InvalidOperationException("Jwt:SigningKey must be configured and at least 32 bytes.");
 }
 
-builder.Services.AddSingleton(jwtOptions);
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -38,12 +39,15 @@ builder.Services
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SigningKey)),
             ValidateLifetime = true,
             ClockSkew = TimeSpan.FromMinutes(1),
+            RoleClaimType = "role",
+            NameClaimType = System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub,
         };
     });
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+app.UseExceptionHandler();
 app.UseMiddleware<CorrelationIdMiddleware>();
 
 if (app.Environment.IsDevelopment())

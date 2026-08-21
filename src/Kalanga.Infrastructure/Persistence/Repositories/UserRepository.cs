@@ -1,8 +1,10 @@
 using Kalanga.Application.Ports.Out;
 using Kalanga.Domain.Entities;
+using Kalanga.Domain.Exceptions;
 using Kalanga.Domain.ValueObjects;
 using Kalanga.Infrastructure.Persistence.Mapping;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace Kalanga.Infrastructure.Persistence.Repositories;
 
@@ -51,7 +53,27 @@ internal sealed class UserRepository(KalangaDbContext db) : IUserRepository
     {
         TenantGuard.Ensure(languageId, user.LanguageId);
         db.Users.Add(user.ToRecord());
-        await db.SaveChangesAsync(cancellationToken);
+
+        try
+        {
+            await db.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException ex) when (IsUniqueEmailViolation(ex))
+        {
+            throw new DuplicateEmailException(user.Email);
+        }
+    }
+
+    private static bool IsUniqueEmailViolation(DbUpdateException exception)
+    {
+        if (exception.InnerException is not PostgresException postgres
+            || postgres.SqlState != PostgresErrorCodes.UniqueViolation)
+        {
+            return false;
+        }
+
+        return postgres.ConstraintName?.Contains("email", StringComparison.OrdinalIgnoreCase) == true
+            || postgres.MessageText.Contains("email", StringComparison.OrdinalIgnoreCase);
     }
 
     public async Task UpdateAsync(LanguageId languageId, User user, CancellationToken cancellationToken = default)

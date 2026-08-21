@@ -1,6 +1,7 @@
 using Kalanga.Application.Ports.Out;
 using Kalanga.Infrastructure.Persistence;
 using Kalanga.Infrastructure.Persistence.Repositories;
+using Kalanga.Infrastructure.Security;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,7 +19,12 @@ public static class DependencyInjection
         services.AddDbContext<KalangaDbContext>(options =>
             KalangaDbContextOptions.Configure(options, connectionString));
 
+        services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
+        services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
+        services.AddSingleton<ITokenService, JwtTokenService>();
+
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<ILessonRepository, LessonRepository>();
         services.AddScoped<IPhraseRepository, PhraseRepository>();
         services.AddScoped<IAudioRecordingRepository, AudioRecordingRepository>();

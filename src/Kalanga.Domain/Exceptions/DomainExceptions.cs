@@ -37,3 +37,30 @@ public sealed class InvalidAudioRecordingException : DomainException
     {
     }
 }
+
+public sealed class DuplicateEmailException : DomainException
+{
+    public DuplicateEmailException(string email)
+        : base("An account with this email address already exists.")
+    {
+        Email = email;
+    }
+
+    public string Email { get; }
+}
+
+public sealed class InvalidCredentialsException : DomainException
+{
+    public InvalidCredentialsException()
+        : base("Invalid email or password.")
+    {
+    }
+}
+
+public sealed class UserSuspendedException : DomainException
+{
+    public UserSuspendedException()
+        : base("This account has been suspended.")
+    {
+    }
+}

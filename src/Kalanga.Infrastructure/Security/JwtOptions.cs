@@ -1,4 +1,4 @@
-namespace Kalanga.Api.Configuration;
+namespace Kalanga.Infrastructure.Security;
 
 public sealed class JwtOptions
 {
