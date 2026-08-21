@@ -23,3 +23,41 @@ public sealed class AuthenticateUserCommandValidator : AbstractValidator<Authent
         RuleFor(x => x.Password).NotEmpty().MaximumLength(128);
     }
 }
+
+public sealed class RefreshTokenCommandValidator : AbstractValidator<RefreshTokenCommand>
+{
+    public RefreshTokenCommandValidator()
+    {
+        RuleFor(x => x.LanguageId.Value).NotEmpty();
+        RuleFor(x => x.RefreshToken).NotEmpty().MaximumLength(2048);
+    }
+}
+
+public sealed class LogoutCommandValidator : AbstractValidator<LogoutCommand>
+{
+    public LogoutCommandValidator()
+    {
+        RuleFor(x => x.LanguageId.Value).NotEmpty();
+        RuleFor(x => x.RefreshToken).NotEmpty().MaximumLength(2048);
+    }
+}
+
+public sealed class ListUsersCommandValidator : AbstractValidator<ListUsersCommand>
+{
+    public ListUsersCommandValidator()
+    {
+        RuleFor(x => x.LanguageId.Value).NotEmpty();
+        RuleFor(x => x.ActorUserId.Value).NotEmpty();
+        RuleFor(x => x.Skip).GreaterThanOrEqualTo(0);
+        RuleFor(x => x.Take).InclusiveBetween(1, 100);
+    }
+}
+
+public sealed class GetPlatformMetricsCommandValidator : AbstractValidator<GetPlatformMetricsCommand>
+{
+    public GetPlatformMetricsCommandValidator()
+    {
+        RuleFor(x => x.LanguageId.Value).NotEmpty();
+        RuleFor(x => x.ActorUserId.Value).NotEmpty();
+    }
+}

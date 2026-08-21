@@ -12,7 +12,11 @@ public static class DependencyInjection
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
         services.AddScoped<RegisterUserPort, RegisterUserUseCase>();
         services.AddScoped<AuthenticateUserPort, AuthenticateUserUseCase>();
+        services.AddScoped<RefreshTokenPort, RefreshTokenUseCase>();
+        services.AddScoped<LogoutPort, LogoutUseCase>();
         services.AddScoped<ManageUserRolePort, ManageUserRoleUseCase>();
+        services.AddScoped<ListUsersPort, ListUsersUseCase>();
+        services.AddScoped<GetPlatformMetricsPort, GetPlatformMetricsUseCase>();
         return services;
     }
 }

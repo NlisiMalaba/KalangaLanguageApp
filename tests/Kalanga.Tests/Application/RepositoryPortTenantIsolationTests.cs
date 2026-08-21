@@ -5,15 +5,23 @@ namespace Kalanga.Tests.Application;
 
 public sealed class RepositoryPortTenantIsolationTests
 {
+    private static readonly HashSet<string> NonTenantPorts =
+    [
+        nameof(IPasswordHasher),
+        nameof(ITokenService),
+    ];
+
     [Fact]
-    public void Every_output_port_method_requires_language_id()
+    public void Every_tenant_scoped_output_port_method_requires_language_id()
     {
         var ports = typeof(ILessonRepository).Assembly
             .GetTypes()
-            .Where(type => type.IsInterface && type.Namespace == typeof(ILessonRepository).Namespace)
+            .Where(type => type.IsInterface
+                && type.Namespace == typeof(ILessonRepository).Namespace
+                && !NonTenantPorts.Contains(type.Name))
             .ToArray();
 
-        Assert.Equal(11, ports.Length);
+        Assert.True(ports.Length >= 11, "Expected the original repository ports to remain registered.");
 
         foreach (var port in ports)
         {

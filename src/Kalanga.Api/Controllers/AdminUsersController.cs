@@ -1,8 +1,9 @@
+using Kalanga.Api.Authorization;
+using Kalanga.Api.Contracts.Admin;
 using Kalanga.Application.Dtos;
 using Kalanga.Application.Ports.In;
 using Kalanga.Domain.Enums;
 using Kalanga.Domain.ValueObjects;
-using Kalanga.Api.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,6 +14,20 @@ namespace Kalanga.Api.Controllers;
 [Route("admin/users")]
 public sealed class AdminUsersController : ControllerBase
 {
+    [HttpGet]
+    public async Task<ActionResult<ListUsersResult>> List(
+        [FromServices] ListUsersPort listUsers,
+        [FromQuery] int skip = 0,
+        [FromQuery] int take = 50,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await listUsers.ExecuteAsync(
+            new ListUsersCommand(User.GetLanguageId(), User.GetUserId(), skip, take),
+            cancellationToken);
+
+        return Ok(result);
+    }
+
     [HttpPut("{id:guid}/role")]
     public async Task<ActionResult<ManageUserRoleResult>> ChangeRole(
         Guid id,
@@ -58,7 +73,3 @@ public sealed class AdminUsersController : ControllerBase
         return Ok(result);
     }
 }
-
-public sealed record ChangeUserRoleRequest(Role Role);
-
-public sealed record ChangeUserStatusRequest(UserStatus Status);

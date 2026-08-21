@@ -97,3 +97,11 @@ public sealed class InvalidUserManagementException : DomainException
     {
     }
 }
+
+public sealed class InvalidRefreshTokenException : DomainException
+{
+    public InvalidRefreshTokenException()
+        : base("Refresh token is invalid or expired.")
+    {
+    }
+}

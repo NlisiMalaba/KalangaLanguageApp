@@ -45,13 +45,14 @@ internal sealed class JwtTokenService(IOptions<JwtOptions> options) : ITokenServ
     public IssuedRefreshToken CreateRefreshToken()
     {
         var plainText = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
-        var tokenHash = HashToken(plainText);
+        var tokenHash = HashRefreshToken(plainText);
         var expiresAt = DateTimeOffset.UtcNow.AddDays(_options.RefreshTokenDays);
         return new IssuedRefreshToken(plainText, tokenHash, expiresAt);
     }
 
-    internal static string HashToken(string plainTextToken)
+    public string HashRefreshToken(string plainTextToken)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(plainTextToken);
         var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(plainTextToken));
         return Convert.ToHexString(bytes).ToLowerInvariant();
     }
