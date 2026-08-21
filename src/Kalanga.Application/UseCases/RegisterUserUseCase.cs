@@ -3,9 +3,11 @@ using Kalanga.Application.Ports.In;
 using Kalanga.Application.Ports.Out;
 using Kalanga.Domain.Entities;
 using Kalanga.Domain.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Kalanga.Application.UseCases;
 
+[AllowAnonymous]
 public sealed class RegisterUserUseCase(
     IUserRepository users,
     IPasswordHasher passwordHasher) : RegisterUserPort

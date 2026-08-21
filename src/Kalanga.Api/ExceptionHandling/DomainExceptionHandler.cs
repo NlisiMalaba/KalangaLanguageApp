@@ -52,7 +52,10 @@ public sealed class DomainExceptionHandler(IProblemDetailsService problemDetails
         {
             DuplicateEmailException => (StatusCodes.Status409Conflict, "Conflict"),
             InvalidCredentialsException => (StatusCodes.Status401Unauthorized, "Unauthorized"),
+            UnauthorizedRoleException => (StatusCodes.Status403Forbidden, "Forbidden"),
             UserSuspendedException => (StatusCodes.Status403Forbidden, "Forbidden"),
+            UserNotFoundException => (StatusCodes.Status404NotFound, "Not Found"),
+            InvalidUserManagementException => (StatusCodes.Status400BadRequest, "Bad Request"),
             _ => (StatusCodes.Status400BadRequest, "Bad Request"),
         };
 }

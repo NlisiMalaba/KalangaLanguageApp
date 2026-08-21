@@ -1,4 +1,5 @@
 using System.Text;
+using Kalanga.Api.Authorization;
 using Kalanga.Api.ExceptionHandling;
 using Kalanga.Api.Middleware;
 using Kalanga.Application;
@@ -29,6 +30,7 @@ builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        options.MapInboundClaims = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -40,10 +42,10 @@ builder.Services
             ValidateLifetime = true,
             ClockSkew = TimeSpan.FromMinutes(1),
             RoleClaimType = "role",
-            NameClaimType = System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub,
+            NameClaimType = "sub",
         };
     });
-builder.Services.AddAuthorization();
+builder.Services.AddKalangaAuthorization();
 
 var app = builder.Build();
 

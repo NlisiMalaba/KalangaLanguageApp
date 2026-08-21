@@ -64,3 +64,36 @@ public sealed class UserSuspendedException : DomainException
     {
     }
 }
+
+public sealed class UnauthorizedRoleException : DomainException
+{
+    public UnauthorizedRoleException(string action, Enums.Role requiredRole)
+        : base($"Role '{requiredRole}' is required to {action}.")
+    {
+        Action = action;
+        RequiredRole = requiredRole;
+    }
+
+    public string Action { get; }
+
+    public Enums.Role RequiredRole { get; }
+}
+
+public sealed class UserNotFoundException : DomainException
+{
+    public UserNotFoundException(ValueObjects.UserId userId)
+        : base($"User '{userId}' was not found.")
+    {
+        UserId = userId;
+    }
+
+    public ValueObjects.UserId UserId { get; }
+}
+
+public sealed class InvalidUserManagementException : DomainException
+{
+    public InvalidUserManagementException(string message)
+        : base(message)
+    {
+    }
+}

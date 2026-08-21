@@ -2,9 +2,11 @@ using Kalanga.Application.Dtos;
 using Kalanga.Application.Ports.In;
 using Kalanga.Application.Ports.Out;
 using Kalanga.Domain.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Kalanga.Application.UseCases;
 
+[AllowAnonymous]
 public sealed class AuthenticateUserUseCase(
     IUserRepository users,
     IPasswordHasher passwordHasher,

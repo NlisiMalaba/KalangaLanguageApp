@@ -9,5 +9,5 @@ namespace Kalanga.Api.Controllers;
 public sealed class HealthController : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> Get() => await Task.FromResult(Ok(new { status = "OK" }));
+    public IActionResult Get() => Ok(new { status = "OK" });
 }

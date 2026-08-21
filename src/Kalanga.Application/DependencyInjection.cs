@@ -1,5 +1,4 @@
 using FluentValidation;
-using Kalanga.Application.Dtos;
 using Kalanga.Application.Ports.In;
 using Kalanga.Application.UseCases;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +12,7 @@ public static class DependencyInjection
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
         services.AddScoped<RegisterUserPort, RegisterUserUseCase>();
         services.AddScoped<AuthenticateUserPort, AuthenticateUserUseCase>();
+        services.AddScoped<ManageUserRolePort, ManageUserRoleUseCase>();
         return services;
     }
 }
