@@ -8,6 +8,11 @@ public interface ILessonRepository
 {
     Task<Lesson?> FindByIdAsync(LanguageId languageId, LessonId id, CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<Lesson>> FindByIdsAsync(
+        LanguageId languageId,
+        IReadOnlyCollection<LessonId> ids,
+        CancellationToken cancellationToken = default);
+
     Task<IReadOnlyList<Lesson>> FindPublishedAsync(
         LanguageId languageId,
         Level? level,

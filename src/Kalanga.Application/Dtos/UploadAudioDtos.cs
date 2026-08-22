@@ -26,3 +26,21 @@ public sealed record UploadAudioResult(
     SpeakerGender SpeakerGender,
     string? DialectLabel,
     int DurationMs);
+
+public sealed record GetAudioCommand(
+    LanguageId LanguageId,
+    UserId ActorUserId,
+    AudioRecordingId AudioRecordingId);
+
+public sealed record GetAudioResult(
+    AudioRecordingId AudioRecordingId,
+    LanguageId LanguageId,
+    PhraseId? PhraseId,
+    LanguageVariationId? VariationId,
+    string CdnUrl,
+    AudioFileFormat FileFormat,
+    int FileSizeBytes,
+    AudioRecordingStatus Status,
+    SpeakerGender SpeakerGender,
+    string? DialectLabel,
+    int DurationMs);

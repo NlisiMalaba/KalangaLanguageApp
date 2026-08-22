@@ -25,8 +25,10 @@ public static class DependencyInjection
             KalangaDbContextOptions.Configure(options, connectionString));
 
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
+        services.Configure<ContentPacksOptions>(configuration.GetSection(ContentPacksOptions.SectionName));
         services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
         services.AddSingleton<ITokenService, JwtTokenService>();
+        services.AddSingleton<IContentPackManifestSigner, HmacContentPackManifestSigner>();
 
         services.AddSingleton<ICatalogCache, MemoryCatalogCache>();
         services.AddScoped<IUserRepository, UserRepository>();

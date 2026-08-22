@@ -12,6 +12,11 @@ public interface IPhraseRepository
         LessonId lessonId,
         CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<Phrase>> FindByLessonIdsAsync(
+        LanguageId languageId,
+        IReadOnlyCollection<LessonId> lessonIds,
+        CancellationToken cancellationToken = default);
+
     Task AddAsync(LanguageId languageId, Phrase phrase, CancellationToken cancellationToken = default);
 
     Task UpdateAsync(LanguageId languageId, Phrase phrase, CancellationToken cancellationToken = default);

@@ -173,3 +173,33 @@ public sealed class AudioStorageUnavailableException : DomainException
     {
     }
 }
+
+public sealed class AudioRecordingNotFoundException : DomainException
+{
+    public AudioRecordingNotFoundException(ValueObjects.AudioRecordingId audioRecordingId)
+        : base($"Audio recording '{audioRecordingId}' was not found.")
+    {
+        AudioRecordingId = audioRecordingId;
+    }
+
+    public ValueObjects.AudioRecordingId AudioRecordingId { get; }
+}
+
+public sealed class ContentPackNotFoundException : DomainException
+{
+    public ContentPackNotFoundException(ValueObjects.ContentPackId packId)
+        : base($"Content pack '{packId}' was not found.")
+    {
+        PackId = packId;
+    }
+
+    public ValueObjects.ContentPackId PackId { get; }
+}
+
+public sealed class TenantAccessDeniedException : DomainException
+{
+    public TenantAccessDeniedException()
+        : base("The requested language does not match this account.")
+    {
+    }
+}

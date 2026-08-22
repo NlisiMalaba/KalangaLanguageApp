@@ -6,6 +6,7 @@ using Kalanga.Application;
 using Kalanga.Infrastructure;
 using Kalanga.Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +25,14 @@ var jwtOptions = builder.Configuration.GetSection(JwtOptions.SectionName).Get<Jw
 if (string.IsNullOrWhiteSpace(jwtOptions.SigningKey) || Encoding.UTF8.GetByteCount(jwtOptions.SigningKey) < 32)
 {
     throw new InvalidOperationException("Jwt:SigningKey must be configured and at least 32 bytes.");
+}
+
+var contentPacksOptions = builder.Configuration.GetSection(ContentPacksOptions.SectionName).Get<ContentPacksOptions>();
+if (contentPacksOptions is null
+    || string.IsNullOrWhiteSpace(contentPacksOptions.SigningKey)
+    || Encoding.UTF8.GetByteCount(contentPacksOptions.SigningKey) < 32)
+{
+    throw new InvalidOperationException("ContentPacks:SigningKey must be configured and at least 32 bytes.");
 }
 
 builder.Services
@@ -46,6 +55,11 @@ builder.Services
         };
     });
 builder.Services.AddKalangaAuthorization();
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy(RateLimitPolicies.AudioUpload, RateLimitPolicies.AudioUploadPartition);
+});
 
 var app = builder.Build();
 
@@ -64,6 +78,7 @@ else
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
 app.MapControllers();
 
 app.Run();

@@ -96,3 +96,32 @@ public sealed class UploadAudioCommandValidator : AbstractValidator<UploadAudioC
             .When(x => x.DeclaredContentLength is not null);
     }
 }
+
+public sealed class ListContentPacksCommandValidator : AbstractValidator<ListContentPacksCommand>
+{
+    public ListContentPacksCommandValidator()
+    {
+        RuleFor(x => x.LanguageId.Value).NotEmpty();
+        RuleFor(x => x.Level).IsInEnum().When(x => x.Level is not null);
+        RuleFor(x => x.Category).MaximumLength(100).When(x => x.Category is not null);
+    }
+}
+
+public sealed class GetContentPackManifestCommandValidator : AbstractValidator<GetContentPackManifestCommand>
+{
+    public GetContentPackManifestCommandValidator()
+    {
+        RuleFor(x => x.LanguageId.Value).NotEmpty();
+        RuleFor(x => x.PackId.Value).NotEmpty();
+    }
+}
+
+public sealed class GetAudioCommandValidator : AbstractValidator<GetAudioCommand>
+{
+    public GetAudioCommandValidator()
+    {
+        RuleFor(x => x.LanguageId.Value).NotEmpty();
+        RuleFor(x => x.ActorUserId.Value).NotEmpty();
+        RuleFor(x => x.AudioRecordingId.Value).NotEmpty();
+    }
+}

@@ -52,6 +52,11 @@ public sealed class TenantIsolationPropertyTests(PostgresFixture postgres)
                 AssertOnlyTenant(await users.ListAsync(queried, skip: 0, take: 50), queried, user => user.LanguageId);
 
                 Assert.Null(await lessons.FindByIdAsync(queried, otherGraph.PublishedLessonId));
+                Assert.Empty(await lessons.FindByIdsAsync(queried, [otherGraph.PublishedLessonId]));
+                AssertOnlyTenant(
+                    await lessons.FindByIdsAsync(queried, [queriedGraph.PublishedLessonId, otherGraph.PublishedLessonId]),
+                    queried,
+                    lesson => lesson.LanguageId);
                 AssertOnlyTenant(
                     await lessons.FindPublishedAsync(queried, level: null, category: null, skip: 0, take: 50),
                     queried,
@@ -68,6 +73,11 @@ public sealed class TenantIsolationPropertyTests(PostgresFixture postgres)
 
                 Assert.Null(await phrases.FindByIdAsync(queried, otherGraph.PhraseId));
                 Assert.Empty(await phrases.FindByLessonIdAsync(queried, otherGraph.PublishedLessonId));
+                Assert.Empty(await phrases.FindByLessonIdsAsync(queried, [otherGraph.PublishedLessonId]));
+                AssertOnlyTenant(
+                    await phrases.FindByLessonIdsAsync(queried, [queriedGraph.PublishedLessonId, otherGraph.PublishedLessonId]),
+                    queried,
+                    phrase => phrase.LanguageId);
                 AssertOnlyTenant(
                     await phrases.FindByLessonIdAsync(queried, queriedGraph.PublishedLessonId),
                     queried,

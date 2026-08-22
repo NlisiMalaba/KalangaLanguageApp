@@ -27,6 +27,9 @@ public static class DependencyInjection
         services.AddScoped<ReviewLessonPort, ReviewLessonUseCase>();
         services.AddScoped<OverrideLessonPublicationPort, OverrideLessonPublicationUseCase>();
         services.AddScoped<UploadAudioPort, UploadAudioUseCase>();
+        services.AddScoped<GetAudioPort, GetAudioUseCase>();
+        services.AddScoped<ListContentPacksPort, ListContentPacksUseCase>();
+        services.AddScoped<GetContentPackManifestPort, GetContentPackManifestUseCase>();
         return services;
     }
 }
