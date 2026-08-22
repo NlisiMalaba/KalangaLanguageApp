@@ -40,6 +40,24 @@ public sealed class RecordMapperTests
     }
 
     [Fact]
+    public void Language_variation_round_trips_through_persistence_record()
+    {
+        var original = LanguageVariation.Create(
+            LanguageId.New(),
+            PhraseId.New(),
+            "Ndini",
+            "formal",
+            DateTimeOffset.UtcNow);
+
+        var restored = original.ToRecord().ToDomain();
+
+        Assert.Equal(original.Id, restored.Id);
+        Assert.Equal(original.PhraseId, restored.PhraseId);
+        Assert.Equal(original.KalangaText, restored.KalangaText);
+        Assert.Equal(original.RegisterLabel, restored.RegisterLabel);
+    }
+
+    [Fact]
     public void Tenant_guard_rejects_mismatched_language()
     {
         Assert.Throws<InvalidOperationException>(() =>

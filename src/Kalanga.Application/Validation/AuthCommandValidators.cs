@@ -61,3 +61,23 @@ public sealed class GetPlatformMetricsCommandValidator : AbstractValidator<GetPl
         RuleFor(x => x.ActorUserId.Value).NotEmpty();
     }
 }
+
+public sealed class BrowseLessonCatalogCommandValidator : AbstractValidator<BrowseLessonCatalogCommand>
+{
+    public BrowseLessonCatalogCommandValidator()
+    {
+        RuleFor(x => x.LanguageId.Value).NotEmpty();
+        RuleFor(x => x.Skip).GreaterThanOrEqualTo(0);
+        RuleFor(x => x.Take).InclusiveBetween(1, 100);
+        RuleFor(x => x.Category).MaximumLength(100).When(x => x.Category is not null);
+    }
+}
+
+public sealed class GetLessonCommandValidator : AbstractValidator<GetLessonCommand>
+{
+    public GetLessonCommandValidator()
+    {
+        RuleFor(x => x.LanguageId.Value).NotEmpty();
+        RuleFor(x => x.LessonId.Value).NotEmpty();
+    }
+}

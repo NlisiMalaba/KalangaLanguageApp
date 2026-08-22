@@ -73,10 +73,33 @@ public sealed class TenantIsolationPropertyTests(PostgresFixture postgres)
                     queried,
                     phrase => phrase.LanguageId);
 
+                var variations = new LanguageVariationRepository(db);
+                Assert.Null(await variations.FindByIdAsync(queried, otherGraph.VariationId));
+                Assert.Empty(await variations.FindByPhraseIdAsync(queried, otherGraph.PhraseId));
+                Assert.Empty(await variations.FindByPhraseIdsAsync(queried, [otherGraph.PhraseId]));
+                AssertOnlyTenant(
+                    await variations.FindByPhraseIdAsync(queried, queriedGraph.PhraseId),
+                    queried,
+                    variation => variation.LanguageId);
+                AssertOnlyTenant(
+                    await variations.FindByPhraseIdsAsync(queried, [queriedGraph.PhraseId]),
+                    queried,
+                    variation => variation.LanguageId);
+
                 Assert.Null(await audio.FindByIdAsync(queried, otherGraph.AudioId));
                 Assert.Empty(await audio.FindByPhraseIdAsync(queried, otherGraph.PhraseId));
+                Assert.Empty(await audio.FindByPhraseIdsAsync(queried, [otherGraph.PhraseId]));
+                Assert.Empty(await audio.FindByVariationIdsAsync(queried, [otherGraph.VariationId]));
                 AssertOnlyTenant(
                     await audio.FindPendingReviewAsync(queried, skip: 0, take: 50),
+                    queried,
+                    recording => recording.LanguageId);
+                AssertOnlyTenant(
+                    await audio.FindByPhraseIdsAsync(queried, [queriedGraph.PhraseId]),
+                    queried,
+                    recording => recording.LanguageId);
+                AssertOnlyTenant(
+                    await audio.FindByVariationIdsAsync(queried, [queriedGraph.VariationId]),
                     queried,
                     recording => recording.LanguageId);
 
@@ -189,6 +212,10 @@ public sealed class TenantIsolationPropertyTests(PostgresFixture postgres)
         var phrase = Phrase.Create(languageId, published.Id, "Ndini", "I am", sortOrder: 0, now);
         await phrases.AddAsync(languageId, phrase);
 
+        var variation = LanguageVariation.Create(languageId, phrase.Id, "Ndini zwino", "everyday", now);
+        var variationRepo = new LanguageVariationRepository(db);
+        await variationRepo.AddAsync(languageId, variation);
+
         var recording = AudioRecording.Create(
             languageId,
             contributor.Id,
@@ -199,6 +226,18 @@ public sealed class TenantIsolationPropertyTests(PostgresFixture postgres)
             now,
             phrase.Id);
         await audio.AddAsync(languageId, recording);
+
+        var variationAudio = AudioRecording.Create(
+            languageId,
+            contributor.Id,
+            "https://cdn.example/v.mp3",
+            AudioFileFormat.Mp3,
+            fileSizeBytes: 1024,
+            durationMs: 700,
+            now,
+            phraseId: null,
+            variationId: variation.Id);
+        await audio.AddAsync(languageId, variationAudio);
 
         var exercise = Exercise.Create(
             languageId,
@@ -238,6 +277,7 @@ public sealed class TenantIsolationPropertyTests(PostgresFixture postgres)
             contributor.Id,
             published.Id,
             phrase.Id,
+            variation.Id,
             recording.Id,
             exercise.Id,
             pack.Id,
@@ -250,6 +290,7 @@ public sealed class TenantIsolationPropertyTests(PostgresFixture postgres)
         UserId ContributorId,
         LessonId PublishedLessonId,
         PhraseId PhraseId,
+        LanguageVariationId VariationId,
         AudioRecordingId AudioId,
         ExerciseId ExerciseId,
         ContentPackId PackId,

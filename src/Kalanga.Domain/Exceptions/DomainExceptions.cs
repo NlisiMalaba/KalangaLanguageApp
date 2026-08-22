@@ -90,6 +90,17 @@ public sealed class UserNotFoundException : DomainException
     public ValueObjects.UserId UserId { get; }
 }
 
+public sealed class LessonNotFoundException : DomainException
+{
+    public LessonNotFoundException(ValueObjects.LessonId lessonId)
+        : base($"Lesson '{lessonId}' was not found.")
+    {
+        LessonId = lessonId;
+    }
+
+    public ValueObjects.LessonId LessonId { get; }
+}
+
 public sealed class InvalidUserManagementException : DomainException
 {
     public InvalidUserManagementException(string message)

@@ -15,6 +15,16 @@ public interface IAudioRecordingRepository
         PhraseId phraseId,
         CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<AudioRecording>> FindByPhraseIdsAsync(
+        LanguageId languageId,
+        IReadOnlyCollection<PhraseId> phraseIds,
+        CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<AudioRecording>> FindByVariationIdsAsync(
+        LanguageId languageId,
+        IReadOnlyCollection<LanguageVariationId> variationIds,
+        CancellationToken cancellationToken = default);
+
     Task<IReadOnlyList<AudioRecording>> FindPendingReviewAsync(
         LanguageId languageId,
         int skip,

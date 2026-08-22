@@ -17,6 +17,8 @@ public static class DependencyInjection
         services.AddScoped<ManageUserRolePort, ManageUserRoleUseCase>();
         services.AddScoped<ListUsersPort, ListUsersUseCase>();
         services.AddScoped<GetPlatformMetricsPort, GetPlatformMetricsUseCase>();
+        services.AddScoped<BrowseLessonCatalogPort, BrowseLessonCatalogUseCase>();
+        services.AddScoped<GetLessonPort, GetLessonUseCase>();
         return services;
     }
 }

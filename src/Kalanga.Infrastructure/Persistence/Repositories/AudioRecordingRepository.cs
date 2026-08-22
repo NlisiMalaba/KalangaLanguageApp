@@ -34,6 +34,46 @@ internal sealed class AudioRecordingRepository(KalangaDbContext db) : IAudioReco
         return records.ConvertAll(static record => record.ToDomain());
     }
 
+    public async Task<IReadOnlyList<AudioRecording>> FindByPhraseIdsAsync(
+        LanguageId languageId,
+        IReadOnlyCollection<PhraseId> phraseIds,
+        CancellationToken cancellationToken = default)
+    {
+        if (phraseIds.Count == 0)
+        {
+            return [];
+        }
+
+        var ids = phraseIds.Select(static id => id.Value).ToArray();
+        var records = await db.AudioRecordings
+            .AsNoTracking()
+            .Where(audio => audio.LanguageId == languageId.Value && audio.PhraseId != null && ids.Contains(audio.PhraseId.Value))
+            .OrderBy(audio => audio.CreatedAt)
+            .ToListAsync(cancellationToken);
+
+        return records.ConvertAll(static record => record.ToDomain());
+    }
+
+    public async Task<IReadOnlyList<AudioRecording>> FindByVariationIdsAsync(
+        LanguageId languageId,
+        IReadOnlyCollection<LanguageVariationId> variationIds,
+        CancellationToken cancellationToken = default)
+    {
+        if (variationIds.Count == 0)
+        {
+            return [];
+        }
+
+        var ids = variationIds.Select(static id => id.Value).ToArray();
+        var records = await db.AudioRecordings
+            .AsNoTracking()
+            .Where(audio => audio.LanguageId == languageId.Value && audio.VariationId != null && ids.Contains(audio.VariationId.Value))
+            .OrderBy(audio => audio.CreatedAt)
+            .ToListAsync(cancellationToken);
+
+        return records.ConvertAll(static record => record.ToDomain());
+    }
+
     public async Task<IReadOnlyList<AudioRecording>> FindPendingReviewAsync(
         LanguageId languageId,
         int skip,

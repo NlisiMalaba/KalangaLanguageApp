@@ -56,6 +56,7 @@ public sealed class DomainExceptionHandler(IProblemDetailsService problemDetails
             UnauthorizedRoleException => (StatusCodes.Status403Forbidden, "Forbidden"),
             UserSuspendedException => (StatusCodes.Status403Forbidden, "Forbidden"),
             UserNotFoundException => (StatusCodes.Status404NotFound, "Not Found"),
+            LessonNotFoundException => (StatusCodes.Status404NotFound, "Not Found"),
             InvalidUserManagementException => (StatusCodes.Status400BadRequest, "Bad Request"),
             _ => (StatusCodes.Status400BadRequest, "Bad Request"),
         };

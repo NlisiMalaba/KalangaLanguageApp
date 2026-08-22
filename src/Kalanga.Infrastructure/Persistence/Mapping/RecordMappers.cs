@@ -121,6 +121,32 @@ internal static class RecordMappers
         record.SortOrder = phrase.SortOrder;
     }
 
+    public static LanguageVariation ToDomain(this LanguageVariationRecord record) =>
+        new(
+            LanguageVariationId.From(record.Id),
+            LanguageId.From(record.LanguageId),
+            PhraseId.From(record.PhraseId),
+            record.KalangaText,
+            record.RegisterLabel,
+            record.CreatedAt);
+
+    public static LanguageVariationRecord ToRecord(this LanguageVariation variation) =>
+        new()
+        {
+            Id = variation.Id.Value,
+            LanguageId = variation.LanguageId.Value,
+            PhraseId = variation.PhraseId.Value,
+            KalangaText = variation.KalangaText,
+            RegisterLabel = variation.RegisterLabel,
+            CreatedAt = variation.CreatedAt,
+        };
+
+    public static void CopyTo(this LanguageVariation variation, LanguageVariationRecord record)
+    {
+        record.KalangaText = variation.KalangaText;
+        record.RegisterLabel = variation.RegisterLabel;
+    }
+
     public static AudioRecording ToDomain(this AudioRecordingRecord record) =>
         new(
             AudioRecordingId.From(record.Id),

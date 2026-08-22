@@ -28,6 +28,7 @@ public static class DependencyInjection
         services.AddScoped<IPlatformMetricsReader, PlatformMetricsReader>();
         services.AddScoped<ILessonRepository, LessonRepository>();
         services.AddScoped<IPhraseRepository, PhraseRepository>();
+        services.AddScoped<ILanguageVariationRepository, LanguageVariationRepository>();
         services.AddScoped<IAudioRecordingRepository, AudioRecordingRepository>();
         services.AddScoped<IExerciseRepository, ExerciseRepository>();
         services.AddScoped<IContentPackRepository, ContentPackRepository>();
