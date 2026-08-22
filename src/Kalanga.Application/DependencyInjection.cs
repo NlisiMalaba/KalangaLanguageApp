@@ -19,6 +19,9 @@ public static class DependencyInjection
         services.AddScoped<GetPlatformMetricsPort, GetPlatformMetricsUseCase>();
         services.AddScoped<BrowseLessonCatalogPort, BrowseLessonCatalogUseCase>();
         services.AddScoped<GetLessonPort, GetLessonUseCase>();
+        services.AddScoped<CreateLessonPort, CreateLessonUseCase>();
+        services.AddScoped<SaveLessonDraftPort, SaveLessonDraftUseCase>();
+        services.AddScoped<SubmitLessonForReviewPort, SubmitLessonForReviewUseCase>();
         return services;
     }
 }

@@ -101,6 +101,17 @@ public sealed class LessonNotFoundException : DomainException
     public ValueObjects.LessonId LessonId { get; }
 }
 
+public sealed class LessonAccessDeniedException : DomainException
+{
+    public LessonAccessDeniedException(string action)
+        : base($"You are not allowed to {action} this lesson.")
+    {
+        Action = action;
+    }
+
+    public string Action { get; }
+}
+
 public sealed class InvalidUserManagementException : DomainException
 {
     public InvalidUserManagementException(string message)
