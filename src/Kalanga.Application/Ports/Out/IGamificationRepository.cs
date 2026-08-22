@@ -12,5 +12,7 @@ public interface IGamificationRepository
 
     Task AddAsync(LanguageId languageId, LearnerGamification gamification, CancellationToken cancellationToken = default);
 
+    Task<bool> TryAddAsync(LanguageId languageId, LearnerGamification gamification, CancellationToken cancellationToken = default);
+
     Task UpdateAsync(LanguageId languageId, LearnerGamification gamification, CancellationToken cancellationToken = default);
 }

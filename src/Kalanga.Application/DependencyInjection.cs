@@ -30,6 +30,8 @@ public static class DependencyInjection
         services.AddScoped<GetAudioPort, GetAudioUseCase>();
         services.AddScoped<ListContentPacksPort, ListContentPacksUseCase>();
         services.AddScoped<GetContentPackManifestPort, GetContentPackManifestUseCase>();
+        services.AddScoped<CompleteLessonPort, CompleteLessonUseCase>();
+        services.AddScoped<GetProgressPort, GetProgressUseCase>();
         return services;
     }
 }

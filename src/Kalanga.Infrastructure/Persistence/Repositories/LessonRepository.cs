@@ -116,6 +116,23 @@ internal sealed class LessonRepository(KalangaDbContext db) : ILessonRepository
         return records.ConvertAll(static record => record.ToDomain());
     }
 
+    public async Task<IReadOnlyList<PublishedLessonSummary>> FindPublishedSummariesAsync(
+        LanguageId languageId,
+        CancellationToken cancellationToken = default)
+    {
+        var published = LessonStatus.Published.ToString();
+        var rows = await db.Lessons
+            .AsNoTracking()
+            .Where(lesson => lesson.LanguageId == languageId.Value && lesson.Status == published)
+            .Select(lesson => new { lesson.Id, lesson.Level, lesson.Category })
+            .ToListAsync(cancellationToken);
+
+        return rows.ConvertAll(static row => new PublishedLessonSummary(
+            LessonId.From(row.Id),
+            Enum.Parse<Level>(row.Level),
+            row.Category));
+    }
+
     public async Task AddAsync(LanguageId languageId, Lesson lesson, CancellationToken cancellationToken = default)
     {
         TenantGuard.Ensure(languageId, lesson.LanguageId);

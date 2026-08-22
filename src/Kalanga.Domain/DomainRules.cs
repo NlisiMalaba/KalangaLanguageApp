@@ -11,4 +11,6 @@ public static class DomainRules
     public const int DefaultSrsIntervalDays = 1;
     public const int IntermediateXpThreshold = 500;
     public const int AdvancedXpThreshold = 2000;
+    public const int MaxLessonScore = 100;
+    public const int WeakAreaScoreThreshold = 70;
 }

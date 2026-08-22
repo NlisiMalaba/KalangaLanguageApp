@@ -125,3 +125,23 @@ public sealed class GetAudioCommandValidator : AbstractValidator<GetAudioCommand
         RuleFor(x => x.AudioRecordingId.Value).NotEmpty();
     }
 }
+
+public sealed class CompleteLessonCommandValidator : AbstractValidator<CompleteLessonCommand>
+{
+    public CompleteLessonCommandValidator()
+    {
+        RuleFor(x => x.LanguageId.Value).NotEmpty();
+        RuleFor(x => x.ActorUserId.Value).NotEmpty();
+        RuleFor(x => x.LessonId.Value).NotEmpty();
+        RuleFor(x => x.Score).InclusiveBetween(0, DomainRules.MaxLessonScore);
+    }
+}
+
+public sealed class GetProgressCommandValidator : AbstractValidator<GetProgressCommand>
+{
+    public GetProgressCommandValidator()
+    {
+        RuleFor(x => x.LanguageId.Value).NotEmpty();
+        RuleFor(x => x.ActorUserId.Value).NotEmpty();
+    }
+}

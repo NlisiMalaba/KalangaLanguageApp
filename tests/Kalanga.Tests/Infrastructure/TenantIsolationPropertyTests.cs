@@ -61,6 +61,12 @@ public sealed class TenantIsolationPropertyTests(PostgresFixture postgres)
                     await lessons.FindPublishedAsync(queried, level: null, category: null, skip: 0, take: 50),
                     queried,
                     lesson => lesson.LanguageId);
+                Assert.DoesNotContain(
+                    await lessons.FindPublishedSummariesAsync(queried),
+                    summary => summary.LessonId == otherGraph.PublishedLessonId);
+                Assert.Contains(
+                    await lessons.FindPublishedSummariesAsync(queried),
+                    summary => summary.LessonId == queriedGraph.PublishedLessonId);
                 AssertOnlyTenant(
                     await lessons.FindPendingReviewAsync(queried, skip: 0, take: 50),
                     queried,

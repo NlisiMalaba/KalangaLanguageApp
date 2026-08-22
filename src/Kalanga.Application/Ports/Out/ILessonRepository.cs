@@ -33,6 +33,10 @@ public interface ILessonRepository
         LessonStatus? status,
         CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<PublishedLessonSummary>> FindPublishedSummariesAsync(
+        LanguageId languageId,
+        CancellationToken cancellationToken = default);
+
     Task AddAsync(LanguageId languageId, Lesson lesson, CancellationToken cancellationToken = default);
 
     Task UpdateAsync(LanguageId languageId, Lesson lesson, CancellationToken cancellationToken = default);

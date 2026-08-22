@@ -51,6 +51,7 @@ public sealed class DomainExceptionHandler(IProblemDetailsService problemDetails
         exception switch
         {
             DuplicateEmailException => (StatusCodes.Status409Conflict, "Conflict"),
+            DuplicateLearnerProgressException => (StatusCodes.Status409Conflict, "Conflict"),
             InvalidCredentialsException => (StatusCodes.Status401Unauthorized, "Unauthorized"),
             InvalidRefreshTokenException => (StatusCodes.Status401Unauthorized, "Unauthorized"),
             UnauthorizedRoleException => (StatusCodes.Status403Forbidden, "Forbidden"),
@@ -62,6 +63,7 @@ public sealed class DomainExceptionHandler(IProblemDetailsService problemDetails
             LessonAccessDeniedException => (StatusCodes.Status403Forbidden, "Forbidden"),
             InvalidUserManagementException => (StatusCodes.Status400BadRequest, "Bad Request"),
             InvalidReviewException => (StatusCodes.Status400BadRequest, "Bad Request"),
+            InvalidLessonCompletionException => (StatusCodes.Status422UnprocessableEntity, "Unprocessable Entity"),
             InvalidAudioUploadException => (StatusCodes.Status422UnprocessableEntity, "Unprocessable Entity"),
             InvalidAudioRecordingException => (StatusCodes.Status422UnprocessableEntity, "Unprocessable Entity"),
             PhraseNotFoundException => (StatusCodes.Status404NotFound, "Not Found"),

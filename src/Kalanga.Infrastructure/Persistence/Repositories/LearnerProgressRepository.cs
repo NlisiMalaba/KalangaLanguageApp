@@ -1,8 +1,10 @@
 using Kalanga.Application.Ports.Out;
 using Kalanga.Domain.Entities;
+using Kalanga.Domain.Exceptions;
 using Kalanga.Domain.ValueObjects;
 using Kalanga.Infrastructure.Persistence.Mapping;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace Kalanga.Infrastructure.Persistence.Repositories;
 
@@ -41,7 +43,15 @@ internal sealed class LearnerProgressRepository(KalangaDbContext db) : ILearnerP
     {
         TenantGuard.Ensure(languageId, progress.LanguageId);
         db.LearnerProgress.Add(progress.ToRecord());
-        await db.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await db.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException exception) when (IsUniqueViolation(exception))
+        {
+            db.ChangeTracker.Clear();
+            throw new DuplicateLearnerProgressException();
+        }
     }
 
     public async Task UpdateAsync(LanguageId languageId, LearnerProgress progress, CancellationToken cancellationToken = default)
@@ -54,4 +64,8 @@ internal sealed class LearnerProgressRepository(KalangaDbContext db) : ILearnerP
         progress.CopyTo(record);
         await db.SaveChangesAsync(cancellationToken);
     }
+
+    private static bool IsUniqueViolation(DbUpdateException exception) =>
+        exception.InnerException is PostgresException postgres
+        && postgres.SqlState == PostgresErrorCodes.UniqueViolation;
 }

@@ -203,3 +203,19 @@ public sealed class TenantAccessDeniedException : DomainException
     {
     }
 }
+
+public sealed class InvalidLessonCompletionException : DomainException
+{
+    public InvalidLessonCompletionException(string message)
+        : base(message)
+    {
+    }
+}
+
+public sealed class DuplicateLearnerProgressException : DomainException
+{
+    public DuplicateLearnerProgressException()
+        : base("Progress for this lesson has already been recorded.")
+    {
+    }
+}
