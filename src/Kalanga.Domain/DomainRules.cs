@@ -8,7 +8,11 @@ public static class DomainRules
     public const int AudioUploadMaxRequestsPerWindow = 20;
     public const int AudioUploadRateLimitWindowSeconds = 60;
     public const decimal DefaultEaseFactor = 2.5m;
+    public const decimal MinEaseFactor = 1.3m;
+    public const decimal MaxEaseFactor = 99.99m;
     public const int DefaultSrsIntervalDays = 1;
+    public const int SrsSecondIntervalDays = 6;
+    public const int SrsPassingQuality = 3;
     public const int IntermediateXpThreshold = 500;
     public const int AdvancedXpThreshold = 2000;
     public const int MaxLessonScore = 100;

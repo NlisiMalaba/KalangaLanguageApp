@@ -1,6 +1,7 @@
 using FluentValidation;
 using Kalanga.Application.Ports.In;
 using Kalanga.Application.UseCases;
+using Kalanga.Domain.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Kalanga.Application;
@@ -34,6 +35,7 @@ public static class DependencyInjection
         services.AddScoped<GetProgressPort, GetProgressUseCase>();
         services.AddScoped<UpdateStreakPort, UpdateStreakUseCase>();
         services.AddScoped<AdvanceLevelPort, AdvanceLevelUseCase>();
+        services.AddSingleton<SpacedRepetitionService>();
         return services;
     }
 }
