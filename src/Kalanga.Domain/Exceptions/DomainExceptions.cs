@@ -127,3 +127,11 @@ public sealed class InvalidRefreshTokenException : DomainException
     {
     }
 }
+
+public sealed class InvalidReviewException : DomainException
+{
+    public InvalidReviewException(string message)
+        : base(message)
+    {
+    }
+}

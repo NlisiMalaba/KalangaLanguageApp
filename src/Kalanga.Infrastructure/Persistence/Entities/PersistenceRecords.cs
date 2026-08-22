@@ -200,3 +200,15 @@ public sealed class SyncCheckpointRecord
     public DateTimeOffset LastSyncedAt { get; set; }
     public long SyncVersion { get; set; }
 }
+
+public sealed class NotificationOutboxRecord
+{
+    public Guid Id { get; set; }
+    public Guid LanguageId { get; set; }
+    public Guid RecipientUserId { get; set; }
+    public Guid LessonId { get; set; }
+    public string NotificationType { get; set; } = string.Empty;
+    public string Payload { get; set; } = string.Empty;
+    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset? ProcessedAt { get; set; }
+}

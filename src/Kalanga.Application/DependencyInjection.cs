@@ -17,11 +17,15 @@ public static class DependencyInjection
         services.AddScoped<ManageUserRolePort, ManageUserRoleUseCase>();
         services.AddScoped<ListUsersPort, ListUsersUseCase>();
         services.AddScoped<GetPlatformMetricsPort, GetPlatformMetricsUseCase>();
-        services.AddScoped<BrowseLessonCatalogPort, BrowseLessonCatalogUseCase>();
+        services.AddScoped<BrowseLessonCatalogUseCase>();
+        services.AddScoped<BrowseLessonCatalogPort, CachingBrowseLessonCatalogUseCase>();
         services.AddScoped<GetLessonPort, GetLessonUseCase>();
         services.AddScoped<CreateLessonPort, CreateLessonUseCase>();
         services.AddScoped<SaveLessonDraftPort, SaveLessonDraftUseCase>();
         services.AddScoped<SubmitLessonForReviewPort, SubmitLessonForReviewUseCase>();
+        services.AddScoped<ListReviewQueuePort, ListReviewQueueUseCase>();
+        services.AddScoped<ReviewLessonPort, ReviewLessonUseCase>();
+        services.AddScoped<OverrideLessonPublicationPort, OverrideLessonPublicationUseCase>();
         return services;
     }
 }

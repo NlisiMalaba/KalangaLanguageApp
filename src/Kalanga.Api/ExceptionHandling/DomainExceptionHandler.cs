@@ -59,6 +59,7 @@ public sealed class DomainExceptionHandler(IProblemDetailsService problemDetails
             LessonNotFoundException => (StatusCodes.Status404NotFound, "Not Found"),
             LessonAccessDeniedException => (StatusCodes.Status403Forbidden, "Forbidden"),
             InvalidUserManagementException => (StatusCodes.Status400BadRequest, "Bad Request"),
+            InvalidReviewException => (StatusCodes.Status400BadRequest, "Bad Request"),
             _ => (StatusCodes.Status400BadRequest, "Bad Request"),
         };
 }

@@ -1,4 +1,5 @@
 using Kalanga.Application.Ports.Out;
+using Kalanga.Infrastructure.Caching;
 using Kalanga.Infrastructure.Persistence;
 using Kalanga.Infrastructure.Persistence.Repositories;
 using Kalanga.Infrastructure.Security;
@@ -23,6 +24,7 @@ public static class DependencyInjection
         services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
         services.AddSingleton<ITokenService, JwtTokenService>();
 
+        services.AddSingleton<ICatalogCache, MemoryCatalogCache>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IPlatformMetricsReader, PlatformMetricsReader>();
@@ -37,6 +39,7 @@ public static class DependencyInjection
         services.AddScoped<IGamificationRepository, GamificationRepository>();
         services.AddScoped<IRequestRepository, RequestRepository>();
         services.AddScoped<ISyncCheckpointRepository, SyncCheckpointRepository>();
+        services.AddScoped<INotificationOutbox, NotificationOutbox>();
 
         return services;
     }

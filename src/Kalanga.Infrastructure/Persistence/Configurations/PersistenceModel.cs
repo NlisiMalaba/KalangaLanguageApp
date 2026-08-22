@@ -25,6 +25,7 @@ internal static class PersistenceModel
         modelBuilder.ApplyConfiguration(new RequestConfiguration());
         modelBuilder.ApplyConfiguration(new RequestUpvoteConfiguration());
         modelBuilder.ApplyConfiguration(new SyncCheckpointConfiguration());
+        modelBuilder.ApplyConfiguration(new NotificationOutboxConfiguration());
     }
 
     internal static void RestrictToLanguage<T>(EntityTypeBuilder<T> builder)
@@ -367,5 +368,27 @@ file sealed class SyncCheckpointConfiguration : IEntityTypeConfiguration<SyncChe
         builder.HasIndex(e => new { e.UserId, e.LanguageId })
             .IsUnique()
             .HasDatabaseName("idx_sync_user");
+    }
+}
+
+file sealed class NotificationOutboxConfiguration : IEntityTypeConfiguration<NotificationOutboxRecord>
+{
+    public void Configure(EntityTypeBuilder<NotificationOutboxRecord> builder)
+    {
+        builder.ToTable("notification_outbox");
+        builder.HasKey(e => e.Id);
+        PersistenceModel.RestrictToLanguage(builder);
+        builder.Property(e => e.NotificationType).HasMaxLength(64).IsRequired();
+        builder.Property(e => e.Payload).IsRequired();
+        builder.HasOne<UserRecord>()
+            .WithMany()
+            .HasForeignKey(e => e.RecipientUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<LessonRecord>()
+            .WithMany()
+            .HasForeignKey(e => e.LessonId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasIndex(e => new { e.LanguageId, e.ProcessedAt })
+            .HasDatabaseName("idx_notification_outbox_pending");
     }
 }

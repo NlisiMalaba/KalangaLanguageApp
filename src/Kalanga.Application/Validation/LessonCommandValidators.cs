@@ -41,3 +41,39 @@ public sealed class SaveLessonDraftCommandValidator : AbstractValidator<SaveLess
         RuleFor(x => x.XpReward).GreaterThan(0);
     }
 }
+
+public sealed class ListReviewQueueCommandValidator : AbstractValidator<ListReviewQueueCommand>
+{
+    public ListReviewQueueCommandValidator()
+    {
+        RuleFor(x => x.LanguageId.Value).NotEmpty();
+        RuleFor(x => x.ActorUserId.Value).NotEmpty();
+        RuleFor(x => x.Skip).GreaterThanOrEqualTo(0);
+        RuleFor(x => x.Take).InclusiveBetween(1, 100);
+    }
+}
+
+public sealed class ReviewLessonCommandValidator : AbstractValidator<ReviewLessonCommand>
+{
+    public ReviewLessonCommandValidator()
+    {
+        RuleFor(x => x.LanguageId.Value).NotEmpty();
+        RuleFor(x => x.ActorUserId.Value).NotEmpty();
+        RuleFor(x => x.LessonId.Value).NotEmpty();
+        RuleFor(x => x.Action).IsInEnum();
+        RuleFor(x => x.Feedback)
+            .NotEmpty()
+            .When(x => x.Action is ReviewLessonAction.Reject or ReviewLessonAction.RequestRevision);
+    }
+}
+
+public sealed class OverrideLessonPublicationCommandValidator : AbstractValidator<OverrideLessonPublicationCommand>
+{
+    public OverrideLessonPublicationCommandValidator()
+    {
+        RuleFor(x => x.LanguageId.Value).NotEmpty();
+        RuleFor(x => x.ActorUserId.Value).NotEmpty();
+        RuleFor(x => x.LessonId.Value).NotEmpty();
+        RuleFor(x => x.Action).IsInEnum();
+    }
+}
