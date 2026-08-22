@@ -135,3 +135,41 @@ public sealed class InvalidReviewException : DomainException
     {
     }
 }
+
+public sealed class InvalidAudioUploadException : DomainException
+{
+    public InvalidAudioUploadException(string message)
+        : base(message)
+    {
+    }
+}
+
+public sealed class PhraseNotFoundException : DomainException
+{
+    public PhraseNotFoundException(ValueObjects.PhraseId phraseId)
+        : base($"Phrase '{phraseId}' was not found.")
+    {
+        PhraseId = phraseId;
+    }
+
+    public ValueObjects.PhraseId PhraseId { get; }
+}
+
+public sealed class VariationNotFoundException : DomainException
+{
+    public VariationNotFoundException(ValueObjects.LanguageVariationId variationId)
+        : base($"Language variation '{variationId}' was not found.")
+    {
+        VariationId = variationId;
+    }
+
+    public ValueObjects.LanguageVariationId VariationId { get; }
+}
+
+public sealed class AudioStorageUnavailableException : DomainException
+{
+    public AudioStorageUnavailableException(string message)
+        : base(message)
+    {
+    }
+}

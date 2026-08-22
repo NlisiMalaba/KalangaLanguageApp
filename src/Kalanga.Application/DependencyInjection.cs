@@ -26,6 +26,7 @@ public static class DependencyInjection
         services.AddScoped<ListReviewQueuePort, ListReviewQueueUseCase>();
         services.AddScoped<ReviewLessonPort, ReviewLessonUseCase>();
         services.AddScoped<OverrideLessonPublicationPort, OverrideLessonPublicationUseCase>();
+        services.AddScoped<UploadAudioPort, UploadAudioUseCase>();
         return services;
     }
 }

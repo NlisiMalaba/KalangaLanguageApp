@@ -75,7 +75,8 @@ public sealed class AudioRecording
         PhraseId? phraseId = null,
         LanguageVariationId? variationId = null,
         SpeakerGender speakerGender = SpeakerGender.Unspecified,
-        string? dialectLabel = null)
+        string? dialectLabel = null,
+        AudioRecordingId? id = null)
     {
         if (phraseId is null && variationId is null)
         {
@@ -91,7 +92,7 @@ public sealed class AudioRecording
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(durationMs);
 
         return new AudioRecording(
-            AudioRecordingId.New(),
+            id ?? AudioRecordingId.New(),
             languageId,
             phraseId,
             variationId,

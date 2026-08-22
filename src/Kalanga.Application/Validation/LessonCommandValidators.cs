@@ -1,5 +1,6 @@
 using FluentValidation;
 using Kalanga.Application.Dtos;
+using Kalanga.Domain;
 
 namespace Kalanga.Application.Validation;
 
@@ -75,5 +76,23 @@ public sealed class OverrideLessonPublicationCommandValidator : AbstractValidato
         RuleFor(x => x.ActorUserId.Value).NotEmpty();
         RuleFor(x => x.LessonId.Value).NotEmpty();
         RuleFor(x => x.Action).IsInEnum();
+    }
+}
+
+public sealed class UploadAudioCommandValidator : AbstractValidator<UploadAudioCommand>
+{
+    public UploadAudioCommandValidator()
+    {
+        RuleFor(x => x.LanguageId.Value).NotEmpty();
+        RuleFor(x => x.ActorUserId.Value).NotEmpty();
+        RuleFor(x => x.DurationMs).GreaterThan(0);
+        RuleFor(x => x.SpeakerGender).IsInEnum();
+        RuleFor(x => x.DialectLabel).MaximumLength(100).When(x => x.DialectLabel is not null);
+        RuleFor(x => x)
+            .Must(x => x.PhraseId is not null || x.VariationId is not null)
+            .WithMessage("Audio must be associated with a phrase or a language variation.");
+        RuleFor(x => x.DeclaredContentLength)
+            .InclusiveBetween(1, DomainRules.MaxAudioFileSizeBytes)
+            .When(x => x.DeclaredContentLength is not null);
     }
 }

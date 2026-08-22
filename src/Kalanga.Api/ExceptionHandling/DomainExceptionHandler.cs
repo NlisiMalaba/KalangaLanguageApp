@@ -60,6 +60,11 @@ public sealed class DomainExceptionHandler(IProblemDetailsService problemDetails
             LessonAccessDeniedException => (StatusCodes.Status403Forbidden, "Forbidden"),
             InvalidUserManagementException => (StatusCodes.Status400BadRequest, "Bad Request"),
             InvalidReviewException => (StatusCodes.Status400BadRequest, "Bad Request"),
+            InvalidAudioUploadException => (StatusCodes.Status422UnprocessableEntity, "Unprocessable Entity"),
+            InvalidAudioRecordingException => (StatusCodes.Status422UnprocessableEntity, "Unprocessable Entity"),
+            PhraseNotFoundException => (StatusCodes.Status404NotFound, "Not Found"),
+            VariationNotFoundException => (StatusCodes.Status404NotFound, "Not Found"),
+            AudioStorageUnavailableException => (StatusCodes.Status503ServiceUnavailable, "Service Unavailable"),
             _ => (StatusCodes.Status400BadRequest, "Bad Request"),
         };
 }
