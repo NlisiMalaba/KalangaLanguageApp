@@ -32,6 +32,8 @@ public static class DependencyInjection
         services.AddScoped<GetContentPackManifestPort, GetContentPackManifestUseCase>();
         services.AddScoped<CompleteLessonPort, CompleteLessonUseCase>();
         services.AddScoped<GetProgressPort, GetProgressUseCase>();
+        services.AddScoped<UpdateStreakPort, UpdateStreakUseCase>();
+        services.AddScoped<AdvanceLevelPort, AdvanceLevelUseCase>();
         return services;
     }
 }

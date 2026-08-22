@@ -38,3 +38,19 @@ public sealed record GetProgressResult(
     IReadOnlyList<ProgressBucketDto> ByLevel,
     IReadOnlyList<ProgressBucketDto> ByCategory,
     IReadOnlyList<WeakAreaDto> WeakAreas);
+
+public sealed record UpdateStreakCommand(
+    LanguageId LanguageId,
+    UserId ActorUserId,
+    DateOnly AsOfDate,
+    bool RecordActivity);
+
+public sealed record UpdateStreakResult(
+    int CurrentStreak,
+    int LongestStreak,
+    DateOnly? LastActivityDate,
+    bool Reset);
+
+public sealed record AdvanceLevelCommand(LanguageId LanguageId, UserId ActorUserId);
+
+public sealed record AdvanceLevelResult(Level ProgressLevel, int TotalXp, bool Advanced);

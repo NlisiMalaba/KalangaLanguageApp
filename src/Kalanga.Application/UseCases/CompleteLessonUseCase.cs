@@ -116,29 +116,37 @@ public sealed class CompleteLessonUseCase(
         CancellationToken cancellationToken)
     {
         var state = await gamification.FindByUserAsync(languageId, userId, cancellationToken);
-        if (state is null)
+        var created = state is null;
+        state ??= LearnerGamification.Create(languageId, userId, now);
+
+        if (xpGranted)
         {
-            state = LearnerGamification.Create(languageId, userId, now);
+            state.AwardXp(lessonXp, now);
+        }
+
+        state.RecordActivity(DateOnly.FromDateTime(now.UtcDateTime), now);
+        state.AdvanceLevelIfThresholdCrossed(now);
+
+        if (created && await gamification.TryAddAsync(languageId, state, cancellationToken))
+        {
+            return state.TotalXp;
+        }
+
+        if (created)
+        {
+            state = await gamification.FindByUserAsync(languageId, userId, cancellationToken)
+                ?? throw new InvalidOperationException("Gamification row was not found after a unique conflict.");
+
             if (xpGranted)
             {
                 state.AwardXp(lessonXp, now);
             }
 
-            if (await gamification.TryAddAsync(languageId, state, cancellationToken))
-            {
-                return state.TotalXp;
-            }
-
-            state = await gamification.FindByUserAsync(languageId, userId, cancellationToken)
-                ?? throw new InvalidOperationException("Gamification row was not found after a unique conflict.");
+            state.RecordActivity(DateOnly.FromDateTime(now.UtcDateTime), now);
+            state.AdvanceLevelIfThresholdCrossed(now);
         }
 
-        if (xpGranted)
-        {
-            state.AwardXp(lessonXp, now);
-            await gamification.UpdateAsync(languageId, state, cancellationToken);
-        }
-
+        await gamification.UpdateAsync(languageId, state, cancellationToken);
         return state.TotalXp;
     }
 }

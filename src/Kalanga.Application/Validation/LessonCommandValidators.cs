@@ -145,3 +145,21 @@ public sealed class GetProgressCommandValidator : AbstractValidator<GetProgressC
         RuleFor(x => x.ActorUserId.Value).NotEmpty();
     }
 }
+
+public sealed class UpdateStreakCommandValidator : AbstractValidator<UpdateStreakCommand>
+{
+    public UpdateStreakCommandValidator()
+    {
+        RuleFor(x => x.LanguageId.Value).NotEmpty();
+        RuleFor(x => x.ActorUserId.Value).NotEmpty();
+    }
+}
+
+public sealed class AdvanceLevelCommandValidator : AbstractValidator<AdvanceLevelCommand>
+{
+    public AdvanceLevelCommandValidator()
+    {
+        RuleFor(x => x.LanguageId.Value).NotEmpty();
+        RuleFor(x => x.ActorUserId.Value).NotEmpty();
+    }
+}

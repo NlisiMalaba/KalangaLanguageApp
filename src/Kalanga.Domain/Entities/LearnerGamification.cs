@@ -63,8 +63,20 @@ public sealed class LearnerGamification
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(xp);
         TotalXp += xp;
-        ProgressLevel = ResolveLevel(TotalXp);
         UpdatedAt = utcNow;
+    }
+
+    public bool AdvanceLevelIfThresholdCrossed(DateTimeOffset utcNow)
+    {
+        var next = ResolveLevel(TotalXp);
+        if (next == ProgressLevel)
+        {
+            return false;
+        }
+
+        ProgressLevel = next;
+        UpdatedAt = utcNow;
+        return true;
     }
 
     public void RecordActivity(DateOnly activityDate, DateTimeOffset utcNow)
@@ -91,6 +103,16 @@ public sealed class LearnerGamification
 
         LastActivityDate = activityDate;
         UpdatedAt = utcNow;
+    }
+
+    public void ResetStreakIfMissed(DateOnly asOfDate, DateTimeOffset utcNow)
+    {
+        if (LastActivityDate is not { } last || last.AddDays(1) >= asOfDate)
+        {
+            return;
+        }
+
+        ResetStreak(utcNow);
     }
 
     public void ResetStreak(DateTimeOffset utcNow)

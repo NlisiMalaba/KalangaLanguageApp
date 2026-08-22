@@ -149,9 +149,24 @@ public sealed class LearnerGamificationTests
         gamification.RecordActivity(day, now);
         gamification.RecordActivity(day.AddDays(1), now);
         gamification.AwardXp(DomainRules.IntermediateXpThreshold, now);
+        gamification.AdvanceLevelIfThresholdCrossed(now);
 
         Assert.Equal(2, gamification.CurrentStreak);
         Assert.Equal(Level.Intermediate, gamification.ProgressLevel);
+    }
+
+    [Fact]
+    public void Missed_day_resets_streak_without_recording_activity()
+    {
+        var now = DateTimeOffset.UtcNow;
+        var gamification = LearnerGamification.Create(LanguageId.New(), UserId.New(), now);
+        var day = new DateOnly(2026, 8, 1);
+
+        gamification.RecordActivity(day, now);
+        gamification.ResetStreakIfMissed(day.AddDays(2), now);
+
+        Assert.Equal(0, gamification.CurrentStreak);
+        Assert.Equal(day, gamification.LastActivityDate);
     }
 }
 
