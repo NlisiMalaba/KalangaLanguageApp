@@ -38,6 +38,28 @@ public sealed class InvalidAudioRecordingException : DomainException
     }
 }
 
+public sealed class DuplicateLanguageCodeException : DomainException
+{
+    public DuplicateLanguageCodeException(string code)
+        : base("A language with this code already exists.")
+    {
+        Code = code;
+    }
+
+    public string Code { get; }
+}
+
+public sealed class LanguageNotFoundException : DomainException
+{
+    public LanguageNotFoundException(ValueObjects.LanguageId languageId)
+        : base($"Language '{languageId}' was not found.")
+    {
+        LanguageId = languageId;
+    }
+
+    public ValueObjects.LanguageId LanguageId { get; }
+}
+
 public sealed class DuplicateEmailException : DomainException
 {
     public DuplicateEmailException(string email)

@@ -11,6 +11,8 @@ public static class DependencyInjection
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
+        services.AddScoped<ListLanguagesPort, ListLanguagesUseCase>();
+        services.AddScoped<CreateLanguagePort, CreateLanguageUseCase>();
         services.AddScoped<RegisterUserPort, RegisterUserUseCase>();
         services.AddScoped<AuthenticateUserPort, AuthenticateUserUseCase>();
         services.AddScoped<RefreshTokenPort, RefreshTokenUseCase>();

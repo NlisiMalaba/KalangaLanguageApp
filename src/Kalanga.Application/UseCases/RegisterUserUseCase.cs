@@ -10,6 +10,7 @@ namespace Kalanga.Application.UseCases;
 [AllowAnonymous]
 public sealed class RegisterUserUseCase(
     IUserRepository users,
+    ILanguageRepository languages,
     IPasswordHasher passwordHasher) : RegisterUserPort
 {
     public async Task<RegisterUserResult> ExecuteAsync(
@@ -17,6 +18,12 @@ public sealed class RegisterUserUseCase(
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(command);
+
+        var language = await languages.FindByIdAsync(command.LanguageId, cancellationToken);
+        if (language is null || !language.IsActive)
+        {
+            throw new LanguageNotFoundException(command.LanguageId);
+        }
 
         var existing = await users.FindByEmailAsync(command.LanguageId, command.Email, cancellationToken);
         if (existing is not null)

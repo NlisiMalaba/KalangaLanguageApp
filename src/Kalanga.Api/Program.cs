@@ -86,6 +86,11 @@ app.UseAuthorization();
 app.UseRateLimiter();
 app.MapControllers();
 
+if (app.Environment.IsDevelopment())
+{
+    await app.Services.SeedDevelopmentDataAsync();
+}
+
 app.Run();
 
 public partial class Program;

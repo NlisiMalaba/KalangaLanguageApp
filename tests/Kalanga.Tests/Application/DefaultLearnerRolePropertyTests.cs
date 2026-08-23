@@ -38,7 +38,7 @@ public sealed class DefaultLearnerRolePropertyTests(PostgresFixture postgres)
                 await SeedLanguageAsync(db, languageId);
 
                 var users = new UserRepository(db);
-                var useCase = new RegisterUserUseCase(users, new FastPasswordHasher());
+                var useCase = new RegisterUserUseCase(users, new LanguageRepository(db), new FastPasswordHasher());
 
                 var result = await useCase.ExecuteAsync(
                     new RegisterUserCommand(languageId, email, password, displayName));
