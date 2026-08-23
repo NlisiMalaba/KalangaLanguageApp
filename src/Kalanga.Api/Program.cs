@@ -19,6 +19,10 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddHostedService<Kalanga.Api.Hosting.DevelopmentLanguageSeedHostedService>();
+}
 
 var jwtOptions = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
     ?? throw new InvalidOperationException($"Configuration section '{JwtOptions.SectionName}' is required.");
@@ -85,11 +89,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();
 app.MapControllers();
-
-if (app.Environment.IsDevelopment())
-{
-    await app.Services.SeedDevelopmentDataAsync();
-}
 
 app.Run();
 
