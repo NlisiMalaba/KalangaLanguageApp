@@ -101,6 +101,17 @@ public sealed class LessonNotFoundException : DomainException
     public ValueObjects.LessonId LessonId { get; }
 }
 
+public sealed class RequestNotFoundException : DomainException
+{
+    public RequestNotFoundException(ValueObjects.RequestId requestId)
+        : base($"Request '{requestId}' was not found.")
+    {
+        RequestId = requestId;
+    }
+
+    public ValueObjects.RequestId RequestId { get; }
+}
+
 public sealed class LessonAccessDeniedException : DomainException
 {
     public LessonAccessDeniedException(string action)

@@ -65,10 +65,21 @@ internal sealed class RequestRepository(KalangaDbContext db) : IRequestRepositor
         UserId userId,
         CancellationToken cancellationToken = default)
     {
+        var open = RequestStatus.Open.ToString();
         var exists = await db.Requests.AnyAsync(
-            request => request.LanguageId == languageId.Value && request.Id == requestId.Value,
+            request => request.LanguageId == languageId.Value
+                       && request.Id == requestId.Value
+                       && request.Status == open,
             cancellationToken);
         if (!exists)
+        {
+            return false;
+        }
+
+        var alreadyVoted = await db.RequestUpvotes.AnyAsync(
+            upvote => upvote.RequestId == requestId.Value && upvote.UserId == userId.Value,
+            cancellationToken);
+        if (alreadyVoted)
         {
             return false;
         }
@@ -83,7 +94,9 @@ internal sealed class RequestRepository(KalangaDbContext db) : IRequestRepositor
         {
             await db.SaveChangesAsync(cancellationToken);
             await db.Requests
-                .Where(request => request.LanguageId == languageId.Value && request.Id == requestId.Value)
+                .Where(request => request.LanguageId == languageId.Value
+                                  && request.Id == requestId.Value
+                                  && request.Status == open)
                 .ExecuteUpdateAsync(
                     setters => setters.SetProperty(request => request.UpvoteCount, request => request.UpvoteCount + 1),
                     cancellationToken);

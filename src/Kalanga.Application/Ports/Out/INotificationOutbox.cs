@@ -11,4 +11,12 @@ public interface INotificationOutbox
         string notificationType,
         string feedback,
         CancellationToken cancellationToken = default);
+
+    Task EnqueueRequestFulfilledAsync(
+        LanguageId languageId,
+        UserId recipientUserId,
+        LessonId lessonId,
+        RequestId requestId,
+        string title,
+        CancellationToken cancellationToken = default);
 }

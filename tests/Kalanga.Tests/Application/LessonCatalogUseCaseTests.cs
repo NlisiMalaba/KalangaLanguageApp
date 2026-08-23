@@ -28,7 +28,7 @@ public sealed class LessonCatalogUseCaseTests(PostgresFixture postgres)
         var now = DateTimeOffset.UtcNow;
         var contributor = await SeedContributorAsync(db, languageId, now);
         var otherContributor = await SeedContributorAsync(db, otherLanguageId, now);
-        var reviewer = UserId.New();
+        var reviewer = await SeedReviewerAsync(db, languageId, now);
 
         var lessons = new LessonRepository(db);
         var match = await SeedPublishedLessonAsync(
@@ -78,7 +78,7 @@ public sealed class LessonCatalogUseCaseTests(PostgresFixture postgres)
 
         var now = DateTimeOffset.UtcNow;
         var contributor = await SeedContributorAsync(db, languageId, now);
-        var reviewer = UserId.New();
+        var reviewer = await SeedReviewerAsync(db, languageId, now);
 
         var lessons = new LessonRepository(db);
         var phrases = new PhraseRepository(db);
@@ -189,6 +189,19 @@ public sealed class LessonCatalogUseCaseTests(PostgresFixture postgres)
         return contributor.Id;
     }
 
+    private static async Task<UserId> SeedReviewerAsync(KalangaDbContext db, LanguageId languageId, DateTimeOffset now)
+    {
+        var reviewer = User.Register(
+            languageId,
+            $"review-{Guid.NewGuid():N}@example.com",
+            "hash",
+            "Reviewer",
+            now);
+        reviewer.ChangeRole(Role.Reviewer, now);
+        await new UserRepository(db).AddAsync(languageId, reviewer);
+        return reviewer.Id;
+    }
+
     private static async Task<Lesson> SeedPublishedLessonAsync(
         LessonRepository lessons,
         LanguageId languageId,
@@ -211,7 +224,7 @@ public sealed class LessonCatalogUseCaseTests(PostgresFixture postgres)
         db.Languages.Add(new LanguageRecord
         {
             Id = languageId.Value,
-            Code = languageId.Value.ToString("N")[..10],
+            Code = languageId.Value.ToString("N")[^10..],
             Name = "Test Language",
             Region = "Test",
             IsActive = true,

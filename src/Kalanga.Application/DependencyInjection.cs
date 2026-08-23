@@ -37,6 +37,10 @@ public static class DependencyInjection
         services.AddScoped<AdvanceLevelPort, AdvanceLevelUseCase>();
         services.AddScoped<SyncProgressPort, SyncProgressUseCase>();
         services.AddScoped<PullSyncPort, PullSyncUseCase>();
+        services.AddScoped<SubmitRequestPort, SubmitRequestUseCase>();
+        services.AddScoped<ListRequestsPort, ListRequestsUseCase>();
+        services.AddScoped<UpvoteRequestPort, UpvoteRequestUseCase>();
+        services.AddScoped<FulfillRequestPort, FulfillRequestUseCase>();
         services.AddSingleton<SpacedRepetitionService>();
         return services;
     }

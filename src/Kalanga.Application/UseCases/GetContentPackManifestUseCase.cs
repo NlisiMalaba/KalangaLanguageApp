@@ -41,9 +41,8 @@ public sealed class GetContentPackManifestUseCase(
         var lessonVariations = await variations.FindByPhraseIdsAsync(command.LanguageId, phraseIds, cancellationToken);
         var variationIds = lessonVariations.Select(static variation => variation.Id).ToArray();
 
-        var phraseAudioTask = audio.FindByPhraseIdsAsync(command.LanguageId, phraseIds, cancellationToken);
-        var variationAudioTask = audio.FindByVariationIdsAsync(command.LanguageId, variationIds, cancellationToken);
-        await Task.WhenAll(phraseAudioTask, variationAudioTask);
+        var phraseAudio = await audio.FindByPhraseIdsAsync(command.LanguageId, phraseIds, cancellationToken);
+        var variationAudio = await audio.FindByVariationIdsAsync(command.LanguageId, variationIds, cancellationToken);
 
         var phrasesByLesson = lessonPhrases
             .GroupBy(static phrase => phrase.LessonId)
@@ -52,9 +51,9 @@ public sealed class GetContentPackManifestUseCase(
             .GroupBy(static variation => variation.PhraseId)
             .ToDictionary(static group => group.Key, static group => group.ToList());
 
-        var playable = new List<AudioRecording>(phraseAudioTask.Result.Count + variationAudioTask.Result.Count);
-        playable.AddRange(phraseAudioTask.Result.Where(static recording => recording.IsPlayableByLearners));
-        playable.AddRange(variationAudioTask.Result.Where(static recording => recording.IsPlayableByLearners));
+        var playable = new List<AudioRecording>(phraseAudio.Count + variationAudio.Count);
+        playable.AddRange(phraseAudio.Where(static recording => recording.IsPlayableByLearners));
+        playable.AddRange(variationAudio.Where(static recording => recording.IsPlayableByLearners));
 
         var lessonDtos = publishedLessons
             .Select(lesson =>

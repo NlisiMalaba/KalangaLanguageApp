@@ -1,3 +1,4 @@
+using System.Text.Json;
 using CsCheck;
 using Kalanga.Application.Dtos;
 using Kalanga.Application.UseCases;
@@ -177,7 +178,7 @@ public sealed class PublishedLessonStructuralCompletenessPropertyTests(PostgresF
                         languageId,
                         lesson.Id,
                         exerciseSpecItem.ExerciseType,
-                        exerciseSpecItem.PromptData,
+                        System.Text.Json.JsonSerializer.Serialize(new { prompt = exerciseSpecItem.PromptData }),
                         exerciseSpecItem.CorrectAnswer,
                         exerciseIndex,
                         now.AddMinutes(exerciseIndex));
@@ -251,7 +252,7 @@ public sealed class PublishedLessonStructuralCompletenessPropertyTests(PostgresF
                     var actual = dto.Exercises[i];
                     Assert.Equal(expected.ExerciseId, actual.ExerciseId);
                     Assert.Equal(expected.ExerciseType, actual.ExerciseType);
-                    Assert.Equal(expected.PromptData, actual.PromptData);
+                    AssertJsonEqual(expected.PromptData, actual.PromptData);
                     Assert.Equal(expected.CorrectAnswer, actual.CorrectAnswer);
                     Assert.Equal(expected.SortOrder, actual.SortOrder);
                     Assert.False(string.IsNullOrWhiteSpace(actual.PromptData));
@@ -323,13 +324,22 @@ public sealed class PublishedLessonStructuralCompletenessPropertyTests(PostgresF
         db.Languages.Add(new LanguageRecord
         {
             Id = languageId.Value,
-            Code = languageId.Value.ToString("N")[..10],
+            Code = languageId.Value.ToString("N")[^10..],
             Name = "Test Language",
             Region = "Test",
             IsActive = true,
             CreatedAt = DateTimeOffset.UtcNow,
         });
         await db.SaveChangesAsync();
+    }
+
+    private static void AssertJsonEqual(string expected, string actual)
+    {
+        using var expectedDoc = JsonDocument.Parse(expected);
+        using var actualDoc = JsonDocument.Parse(actual);
+        Assert.True(
+            JsonElement.DeepEquals(expectedDoc.RootElement, actualDoc.RootElement),
+            $"JSON differed.{Environment.NewLine}Expected: {expected}{Environment.NewLine}Actual: {actual}");
     }
 
     private sealed record VariationSpec(string KalangaText, string RegisterLabel, bool ApprovedAudio);

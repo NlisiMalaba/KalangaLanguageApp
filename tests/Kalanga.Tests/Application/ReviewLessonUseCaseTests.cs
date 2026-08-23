@@ -215,7 +215,7 @@ public sealed class ReviewLessonUseCaseTests(PostgresFixture postgres)
         db.Languages.Add(new LanguageRecord
         {
             Id = languageId.Value,
-            Code = languageId.Value.ToString("N")[..10],
+            Code = languageId.Value.ToString("N")[^10..],
             Name = "Test Language",
             Region = "Test",
             IsActive = true,
@@ -239,5 +239,14 @@ public sealed class ReviewLessonUseCaseTests(PostgresFixture postgres)
             Enqueued.Add((recipientUserId, lessonId, notificationType, feedback));
             return Task.CompletedTask;
         }
+
+        public Task EnqueueRequestFulfilledAsync(
+            LanguageId languageId,
+            UserId recipientUserId,
+            LessonId lessonId,
+            RequestId requestId,
+            string title,
+            CancellationToken cancellationToken = default) =>
+            Task.CompletedTask;
     }
 }

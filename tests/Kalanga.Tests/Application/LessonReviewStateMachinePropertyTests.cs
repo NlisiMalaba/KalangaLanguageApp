@@ -239,7 +239,7 @@ public sealed class LessonReviewStateMachinePropertyTests(PostgresFixture postgr
         db.Languages.Add(new LanguageRecord
         {
             Id = languageId.Value,
-            Code = languageId.Value.ToString("N")[..10],
+            Code = languageId.Value.ToString("N")[^10..],
             Name = "Test Language",
             Region = "Test",
             IsActive = true,
@@ -263,5 +263,14 @@ public sealed class LessonReviewStateMachinePropertyTests(PostgresFixture postgr
             Enqueued.Add((recipientUserId, notificationType, feedback));
             return Task.CompletedTask;
         }
+
+        public Task EnqueueRequestFulfilledAsync(
+            LanguageId languageId,
+            UserId recipientUserId,
+            LessonId lessonId,
+            RequestId requestId,
+            string title,
+            CancellationToken cancellationToken = default) =>
+            Task.CompletedTask;
     }
 }

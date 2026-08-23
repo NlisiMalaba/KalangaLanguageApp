@@ -113,7 +113,7 @@ public sealed class AudioMetadataRoundTripPropertyTests(PostgresFixture postgres
         db.Languages.Add(new LanguageRecord
         {
             Id = languageId.Value,
-            Code = languageId.Value.ToString("N")[..10],
+            Code = languageId.Value.ToString("N")[^10..],
             Name = "Test Language",
             Region = "Test",
             IsActive = true,

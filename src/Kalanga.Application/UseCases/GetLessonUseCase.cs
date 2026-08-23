@@ -28,12 +28,8 @@ public sealed class GetLessonUseCase(
             throw new LessonNotFoundException(command.LessonId);
         }
 
-        var phrasesTask = phrases.FindByLessonIdAsync(command.LanguageId, lesson.Id, cancellationToken);
-        var exercisesTask = exercises.FindByLessonIdAsync(command.LanguageId, lesson.Id, cancellationToken);
-        await Task.WhenAll(phrasesTask, exercisesTask);
-
-        var lessonPhrases = phrasesTask.Result;
-        var lessonExercises = exercisesTask.Result;
+        var lessonPhrases = await phrases.FindByLessonIdAsync(command.LanguageId, lesson.Id, cancellationToken);
+        var lessonExercises = await exercises.FindByLessonIdAsync(command.LanguageId, lesson.Id, cancellationToken);
         var phraseIds = lessonPhrases.Select(static phrase => phrase.Id).ToArray();
 
         var lessonVariations = await variations.FindByPhraseIdsAsync(
@@ -42,12 +38,11 @@ public sealed class GetLessonUseCase(
             cancellationToken);
         var variationIds = lessonVariations.Select(static variation => variation.Id).ToArray();
 
-        var phraseAudioTask = audio.FindByPhraseIdsAsync(command.LanguageId, phraseIds, cancellationToken);
-        var variationAudioTask = audio.FindByVariationIdsAsync(command.LanguageId, variationIds, cancellationToken);
-        await Task.WhenAll(phraseAudioTask, variationAudioTask);
+        var phraseAudio = await audio.FindByPhraseIdsAsync(command.LanguageId, phraseIds, cancellationToken);
+        var variationAudio = await audio.FindByVariationIdsAsync(command.LanguageId, variationIds, cancellationToken);
 
-        var audioByPhrase = IndexPlayableByPhrase(phraseAudioTask.Result);
-        var audioByVariation = IndexPlayableByVariation(variationAudioTask.Result);
+        var audioByPhrase = IndexPlayableByPhrase(phraseAudio);
+        var audioByVariation = IndexPlayableByVariation(variationAudio);
         var variationsByPhrase = lessonVariations
             .GroupBy(static variation => variation.PhraseId)
             .ToDictionary(static group => group.Key, static group => group.ToList());
