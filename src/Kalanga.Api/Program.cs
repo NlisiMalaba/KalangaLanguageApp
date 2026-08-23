@@ -8,6 +8,7 @@ using Kalanga.Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,6 +70,10 @@ app.UseMiddleware<CorrelationIdMiddleware>();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference(options =>
+    {
+        options.WithTitle("Kalanga API");
+    });
 }
 else
 {
