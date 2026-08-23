@@ -17,4 +17,8 @@ public static class DomainRules
     public const int AdvancedXpThreshold = 2000;
     public const int MaxLessonScore = 100;
     public const int WeakAreaScoreThreshold = 70;
+    public const int MaxSyncProgressItems = 200;
+    public const int MaxSyncSrsItems = 500;
+    public const int MaxSyncClientOperationIdLength = 128;
+    public const int MaxSyncPayloadBytes = 256 * 1024;
 }

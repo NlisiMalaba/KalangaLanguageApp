@@ -20,6 +20,7 @@ public sealed class PersistenceModelTests
         AssertIndex(model, typeof(SpacedRepetitionRecordRow), "idx_srs_user_next");
         AssertIndex(model, typeof(RequestRecord), "idx_requests_language_upvotes");
         AssertIndex(model, typeof(SyncCheckpointRecord), "idx_sync_user");
+        AssertIndex(model, typeof(SyncPushReceiptRecord), "ux_sync_push_receipts_client_operation");
         AssertIndex(model, typeof(NotificationOutboxRecord), "idx_notification_outbox_pending");
 
         var progress = model.FindEntityType(typeof(LearnerProgressRecord))!;

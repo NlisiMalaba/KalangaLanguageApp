@@ -64,6 +64,8 @@ public sealed class DomainExceptionHandler(IProblemDetailsService problemDetails
             InvalidUserManagementException => (StatusCodes.Status400BadRequest, "Bad Request"),
             InvalidReviewException => (StatusCodes.Status400BadRequest, "Bad Request"),
             InvalidLessonCompletionException => (StatusCodes.Status422UnprocessableEntity, "Unprocessable Entity"),
+            InvalidSyncPayloadException => (StatusCodes.Status422UnprocessableEntity, "Unprocessable Entity"),
+            DuplicateSyncPushException => (StatusCodes.Status409Conflict, "Conflict"),
             InvalidAudioUploadException => (StatusCodes.Status422UnprocessableEntity, "Unprocessable Entity"),
             InvalidAudioRecordingException => (StatusCodes.Status422UnprocessableEntity, "Unprocessable Entity"),
             PhraseNotFoundException => (StatusCodes.Status404NotFound, "Not Found"),

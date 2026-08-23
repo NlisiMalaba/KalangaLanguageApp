@@ -168,3 +168,16 @@ public readonly record struct SyncCheckpointId
 
     public override string ToString() => Value.ToString();
 }
+
+public readonly record struct SyncPushReceiptId
+{
+    public Guid Value { get; }
+
+    private SyncPushReceiptId(Guid value) => Value = value;
+
+    public static SyncPushReceiptId New() => new(Guid.CreateVersion7());
+
+    public static SyncPushReceiptId From(Guid value) => new(Guard.NotEmpty(value, nameof(value)));
+
+    public override string ToString() => Value.ToString();
+}

@@ -426,6 +426,24 @@ internal static class RecordMappers
         record.SyncVersion = checkpoint.SyncVersion;
     }
 
+    public static SyncPushReceipt ToDomain(this SyncPushReceiptRecord record) =>
+        new(
+            SyncPushReceiptId.From(record.Id),
+            LanguageId.From(record.LanguageId),
+            UserId.From(record.UserId),
+            record.ClientOperationId,
+            record.CreatedAt);
+
+    public static SyncPushReceiptRecord ToRecord(this SyncPushReceipt receipt) =>
+        new()
+        {
+            Id = receipt.Id.Value,
+            LanguageId = receipt.LanguageId.Value,
+            UserId = receipt.UserId.Value,
+            ClientOperationId = receipt.ClientOperationId,
+            CreatedAt = receipt.CreatedAt,
+        };
+
     private static string Store<TEnum>(TEnum value) where TEnum : struct, Enum => value.ToString();
 
     private static TEnum Parse<TEnum>(string value) where TEnum : struct, Enum =>

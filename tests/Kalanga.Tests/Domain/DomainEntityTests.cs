@@ -168,6 +168,45 @@ public sealed class LearnerGamificationTests
         Assert.Equal(0, gamification.CurrentStreak);
         Assert.Equal(day, gamification.LastActivityDate);
     }
+
+    [Fact]
+    public void Additive_merge_adds_xp_and_keeps_the_higher_streak()
+    {
+        var now = DateTimeOffset.UtcNow;
+        var gamification = LearnerGamification.Create(LanguageId.New(), UserId.New(), now);
+        gamification.AwardXp(10, now);
+        gamification.RecordActivity(new DateOnly(2026, 8, 1), now);
+
+        gamification.MergeAdditive(
+            additionalXp: 7,
+            incomingCurrentStreak: 4,
+            incomingLongestStreak: 9,
+            incomingLastActivityDate: new DateOnly(2026, 8, 10),
+            now);
+
+        Assert.Equal(17, gamification.TotalXp);
+        Assert.Equal(4, gamification.CurrentStreak);
+        Assert.Equal(9, gamification.LongestStreak);
+        Assert.Equal(new DateOnly(2026, 8, 10), gamification.LastActivityDate);
+    }
+}
+
+public sealed class LearnerProgressTests
+{
+    [Fact]
+    public void Last_write_wins_keeps_the_newer_client_payload()
+    {
+        var now = DateTimeOffset.UtcNow;
+        var progress = LearnerProgress.Start(LanguageId.New(), UserId.New(), LessonId.New(), now);
+        progress.Complete(40, 10, now);
+
+        Assert.False(progress.ApplyLastWriteWins(now.AddMinutes(-1), 99, 10, now.AddMinutes(-1)));
+        Assert.Equal(40, progress.Score);
+
+        Assert.True(progress.ApplyLastWriteWins(now.AddMinutes(1), 88, 10, now.AddMinutes(1)));
+        Assert.Equal(88, progress.Score);
+        Assert.Equal(now.AddMinutes(1), progress.UpdatedAt);
+    }
 }
 
 public sealed class IdTests

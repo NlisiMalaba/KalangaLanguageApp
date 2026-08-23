@@ -25,6 +25,7 @@ internal static class PersistenceModel
         modelBuilder.ApplyConfiguration(new RequestConfiguration());
         modelBuilder.ApplyConfiguration(new RequestUpvoteConfiguration());
         modelBuilder.ApplyConfiguration(new SyncCheckpointConfiguration());
+        modelBuilder.ApplyConfiguration(new SyncPushReceiptConfiguration());
         modelBuilder.ApplyConfiguration(new NotificationOutboxConfiguration());
     }
 
@@ -368,6 +369,24 @@ file sealed class SyncCheckpointConfiguration : IEntityTypeConfiguration<SyncChe
         builder.HasIndex(e => new { e.UserId, e.LanguageId })
             .IsUnique()
             .HasDatabaseName("idx_sync_user");
+    }
+}
+
+file sealed class SyncPushReceiptConfiguration : IEntityTypeConfiguration<SyncPushReceiptRecord>
+{
+    public void Configure(EntityTypeBuilder<SyncPushReceiptRecord> builder)
+    {
+        builder.ToTable("sync_push_receipts");
+        builder.HasKey(e => e.Id);
+        PersistenceModel.RestrictToLanguage(builder);
+        builder.Property(e => e.ClientOperationId).HasMaxLength(128).IsRequired();
+        builder.HasOne<UserRecord>()
+            .WithMany()
+            .HasForeignKey(e => e.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+        builder.HasIndex(e => new { e.LanguageId, e.UserId, e.ClientOperationId })
+            .IsUnique()
+            .HasDatabaseName("ux_sync_push_receipts_client_operation");
     }
 }
 

@@ -39,6 +39,22 @@ internal sealed class LearnerProgressRepository(KalangaDbContext db) : ILearnerP
         return records.ConvertAll(static record => record.ToDomain());
     }
 
+    public async Task<IReadOnlyList<LearnerProgress>> FindUpdatedSinceAsync(
+        LanguageId languageId,
+        UserId userId,
+        DateTimeOffset updatedAfter,
+        CancellationToken cancellationToken = default)
+    {
+        var records = await db.LearnerProgress
+            .AsNoTracking()
+            .Where(progress => progress.LanguageId == languageId.Value
+                               && progress.UserId == userId.Value
+                               && progress.UpdatedAt > updatedAfter)
+            .ToListAsync(cancellationToken);
+
+        return records.ConvertAll(static record => record.ToDomain());
+    }
+
     public async Task AddAsync(LanguageId languageId, LearnerProgress progress, CancellationToken cancellationToken = default)
     {
         TenantGuard.Ensure(languageId, progress.LanguageId);

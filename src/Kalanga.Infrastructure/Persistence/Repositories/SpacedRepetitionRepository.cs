@@ -44,6 +44,35 @@ internal sealed class SpacedRepetitionRepository(KalangaDbContext db) : ISpacedR
         return records.ConvertAll(static record => record.ToDomain());
     }
 
+    public async Task<IReadOnlyList<SpacedRepetitionRecord>> FindByUserAsync(
+        LanguageId languageId,
+        UserId userId,
+        CancellationToken cancellationToken = default)
+    {
+        var records = await db.SpacedRepetitionRecords
+            .AsNoTracking()
+            .Where(srs => srs.LanguageId == languageId.Value && srs.UserId == userId.Value)
+            .ToListAsync(cancellationToken);
+
+        return records.ConvertAll(static record => record.ToDomain());
+    }
+
+    public async Task<IReadOnlyList<SpacedRepetitionRecord>> FindUpdatedSinceAsync(
+        LanguageId languageId,
+        UserId userId,
+        DateTimeOffset updatedAfter,
+        CancellationToken cancellationToken = default)
+    {
+        var records = await db.SpacedRepetitionRecords
+            .AsNoTracking()
+            .Where(srs => srs.LanguageId == languageId.Value
+                          && srs.UserId == userId.Value
+                          && srs.UpdatedAt > updatedAfter)
+            .ToListAsync(cancellationToken);
+
+        return records.ConvertAll(static record => record.ToDomain());
+    }
+
     public async Task AddAsync(LanguageId languageId, SpacedRepetitionRecord record, CancellationToken cancellationToken = default)
     {
         TenantGuard.Ensure(languageId, record.LanguageId);

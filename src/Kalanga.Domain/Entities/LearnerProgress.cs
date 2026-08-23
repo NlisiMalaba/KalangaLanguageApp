@@ -64,4 +64,54 @@ public sealed class LearnerProgress
         XpAwarded = xpAwarded;
         UpdatedAt = utcNow;
     }
+
+    public static LearnerProgress FromClient(
+        LanguageId languageId,
+        UserId userId,
+        LessonId lessonId,
+        DateTimeOffset? completedAt,
+        int? score,
+        int xpAwarded,
+        DateTimeOffset updatedAt)
+    {
+        if (score is { } value)
+        {
+            Guard.NonNegative(value, nameof(score));
+        }
+
+        Guard.NonNegative(xpAwarded, nameof(xpAwarded));
+        return new LearnerProgress(
+            LearnerProgressId.New(),
+            languageId,
+            userId,
+            lessonId,
+            completedAt,
+            score,
+            xpAwarded,
+            updatedAt);
+    }
+
+    public bool ApplyLastWriteWins(
+        DateTimeOffset? completedAt,
+        int? score,
+        int xpAwarded,
+        DateTimeOffset incomingUpdatedAt)
+    {
+        if (incomingUpdatedAt <= UpdatedAt)
+        {
+            return false;
+        }
+
+        if (score is { } value)
+        {
+            Guard.NonNegative(value, nameof(score));
+        }
+
+        Guard.NonNegative(xpAwarded, nameof(xpAwarded));
+        CompletedAt = completedAt;
+        Score = score;
+        XpAwarded = xpAwarded;
+        UpdatedAt = incomingUpdatedAt;
+        return true;
+    }
 }

@@ -23,6 +23,7 @@ public sealed class KalangaDbContext(DbContextOptions<KalangaDbContext> options)
     public DbSet<RequestRecord> Requests => Set<RequestRecord>();
     public DbSet<RequestUpvoteRecord> RequestUpvotes => Set<RequestUpvoteRecord>();
     public DbSet<SyncCheckpointRecord> SyncCheckpoints => Set<SyncCheckpointRecord>();
+    public DbSet<SyncPushReceiptRecord> SyncPushReceipts => Set<SyncPushReceiptRecord>();
     public DbSet<NotificationOutboxRecord> NotificationOutbox => Set<NotificationOutboxRecord>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -35,6 +35,8 @@ public static class DependencyInjection
         services.AddScoped<GetProgressPort, GetProgressUseCase>();
         services.AddScoped<UpdateStreakPort, UpdateStreakUseCase>();
         services.AddScoped<AdvanceLevelPort, AdvanceLevelUseCase>();
+        services.AddScoped<SyncProgressPort, SyncProgressUseCase>();
+        services.AddScoped<PullSyncPort, PullSyncUseCase>();
         services.AddSingleton<SpacedRepetitionService>();
         return services;
     }

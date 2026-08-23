@@ -50,6 +50,25 @@ internal sealed class PhraseRepository(KalangaDbContext db) : IPhraseRepository
         return records.ConvertAll(static record => record.ToDomain());
     }
 
+    public async Task<IReadOnlyList<Phrase>> FindByIdsAsync(
+        LanguageId languageId,
+        IReadOnlyCollection<PhraseId> ids,
+        CancellationToken cancellationToken = default)
+    {
+        if (ids.Count == 0)
+        {
+            return [];
+        }
+
+        var values = ids.Select(static id => id.Value).Distinct().ToArray();
+        var records = await db.Phrases
+            .AsNoTracking()
+            .Where(phrase => phrase.LanguageId == languageId.Value && values.Contains(phrase.Id))
+            .ToListAsync(cancellationToken);
+
+        return records.ConvertAll(static record => record.ToDomain());
+    }
+
     public async Task AddAsync(LanguageId languageId, Phrase phrase, CancellationToken cancellationToken = default)
     {
         TenantGuard.Ensure(languageId, phrase.LanguageId);

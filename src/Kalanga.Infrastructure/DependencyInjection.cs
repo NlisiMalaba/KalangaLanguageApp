@@ -45,6 +45,8 @@ public static class DependencyInjection
         services.AddScoped<IGamificationRepository, GamificationRepository>();
         services.AddScoped<IRequestRepository, RequestRepository>();
         services.AddScoped<ISyncCheckpointRepository, SyncCheckpointRepository>();
+        services.AddScoped<ISyncPushReceiptRepository, SyncPushReceiptRepository>();
+        services.AddScoped<IUnitOfWork, EfUnitOfWork>();
         services.AddScoped<INotificationOutbox, NotificationOutbox>();
 
         services.Configure<AudioStorageOptions>(configuration.GetSection(AudioStorageOptions.SectionName));

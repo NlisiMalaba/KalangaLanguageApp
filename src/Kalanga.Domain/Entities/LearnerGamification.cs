@@ -121,6 +121,34 @@ public sealed class LearnerGamification
         UpdatedAt = utcNow;
     }
 
+    public void MergeAdditive(
+        int additionalXp,
+        int incomingCurrentStreak,
+        int incomingLongestStreak,
+        DateOnly? incomingLastActivityDate,
+        DateTimeOffset utcNow)
+    {
+        Guard.NonNegative(additionalXp, nameof(additionalXp));
+        Guard.NonNegative(incomingCurrentStreak, nameof(incomingCurrentStreak));
+        Guard.NonNegative(incomingLongestStreak, nameof(incomingLongestStreak));
+
+        if (additionalXp > 0)
+        {
+            AwardXp(additionalXp, utcNow);
+        }
+
+        CurrentStreak = Math.Max(CurrentStreak, incomingCurrentStreak);
+        LongestStreak = Math.Max(LongestStreak, Math.Max(incomingLongestStreak, CurrentStreak));
+        if (incomingLastActivityDate is { } incoming
+            && (LastActivityDate is null || incoming > LastActivityDate.Value))
+        {
+            LastActivityDate = incoming;
+        }
+
+        AdvanceLevelIfThresholdCrossed(utcNow);
+        UpdatedAt = utcNow;
+    }
+
     private static Level ResolveLevel(int totalXp)
     {
         if (totalXp >= DomainRules.AdvancedXpThreshold)

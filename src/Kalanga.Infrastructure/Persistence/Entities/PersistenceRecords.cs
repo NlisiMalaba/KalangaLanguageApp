@@ -201,6 +201,15 @@ public sealed class SyncCheckpointRecord
     public long SyncVersion { get; set; }
 }
 
+public sealed class SyncPushReceiptRecord
+{
+    public Guid Id { get; set; }
+    public Guid LanguageId { get; set; }
+    public Guid UserId { get; set; }
+    public string ClientOperationId { get; set; } = string.Empty;
+    public DateTimeOffset CreatedAt { get; set; }
+}
+
 public sealed class NotificationOutboxRecord
 {
     public Guid Id { get; set; }

@@ -88,6 +88,11 @@ public sealed class TenantIsolationPropertyTests(PostgresFixture postgres)
                     await phrases.FindByLessonIdAsync(queried, queriedGraph.PublishedLessonId),
                     queried,
                     phrase => phrase.LanguageId);
+                Assert.Empty(await phrases.FindByIdsAsync(queried, [otherGraph.PhraseId]));
+                AssertOnlyTenant(
+                    await phrases.FindByIdsAsync(queried, [queriedGraph.PhraseId, otherGraph.PhraseId]),
+                    queried,
+                    phrase => phrase.LanguageId);
 
                 var variations = new LanguageVariationRepository(db);
                 Assert.Null(await variations.FindByIdAsync(queried, otherGraph.VariationId));
@@ -135,6 +140,14 @@ public sealed class TenantIsolationPropertyTests(PostgresFixture postgres)
                     await progress.FindByUserAsync(queried, queriedGraph.LearnerId),
                     queried,
                     item => item.LanguageId);
+                Assert.Empty(await progress.FindUpdatedSinceAsync(
+                    queried,
+                    otherGraph.LearnerId,
+                    DateTimeOffset.MinValue));
+                AssertOnlyTenant(
+                    await progress.FindUpdatedSinceAsync(queried, queriedGraph.LearnerId, DateTimeOffset.MinValue),
+                    queried,
+                    item => item.LanguageId);
 
                 Assert.Null(
                     await srs.FindByUserPhraseAndVariationAsync(
@@ -147,6 +160,22 @@ public sealed class TenantIsolationPropertyTests(PostgresFixture postgres)
                     await srs.FindDueAsync(queried, queriedGraph.LearnerId, DateOnly.MaxValue),
                     queried,
                     record => record.LanguageId);
+                Assert.Empty(await srs.FindByUserAsync(queried, otherGraph.LearnerId));
+                AssertOnlyTenant(
+                    await srs.FindByUserAsync(queried, queriedGraph.LearnerId),
+                    queried,
+                    record => record.LanguageId);
+                Assert.Empty(await srs.FindUpdatedSinceAsync(
+                    queried,
+                    otherGraph.LearnerId,
+                    DateTimeOffset.MinValue));
+                AssertOnlyTenant(
+                    await srs.FindUpdatedSinceAsync(queried, queriedGraph.LearnerId, DateTimeOffset.MinValue),
+                    queried,
+                    record => record.LanguageId);
+
+                var receipts = new SyncPushReceiptRepository(db);
+                Assert.False(await receipts.ExistsAsync(queried, otherGraph.LearnerId, "op"));
 
                 Assert.Null(await gamification.FindByUserAsync(queried, otherGraph.LearnerId));
                 var ownGamification = await gamification.FindByUserAsync(queried, queriedGraph.LearnerId);

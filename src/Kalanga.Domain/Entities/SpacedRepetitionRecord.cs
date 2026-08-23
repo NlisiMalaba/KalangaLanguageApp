@@ -76,6 +76,51 @@ public sealed class SpacedRepetitionRecord
 
     public void Schedule(decimal easeFactor, int intervalDays, int repetitions, DateOnly nextReviewAt, DateTimeOffset utcNow)
     {
+        ApplySchedule(easeFactor, intervalDays, repetitions, nextReviewAt, utcNow, utcNow);
+    }
+
+    public static SpacedRepetitionRecord FromClient(
+        LanguageId languageId,
+        UserId userId,
+        PhraseId phraseId,
+        LanguageVariationId? variationId,
+        decimal easeFactor,
+        int intervalDays,
+        int repetitions,
+        DateOnly nextReviewAt,
+        DateTimeOffset? lastReviewedAt,
+        DateTimeOffset updatedAt)
+    {
+        var record = Create(languageId, userId, phraseId, updatedAt, variationId);
+        record.ApplySchedule(easeFactor, intervalDays, repetitions, nextReviewAt, lastReviewedAt, updatedAt);
+        return record;
+    }
+
+    public bool ApplyLastWriteWins(
+        decimal easeFactor,
+        int intervalDays,
+        int repetitions,
+        DateOnly nextReviewAt,
+        DateTimeOffset? lastReviewedAt,
+        DateTimeOffset incomingUpdatedAt)
+    {
+        if (incomingUpdatedAt <= UpdatedAt)
+        {
+            return false;
+        }
+
+        ApplySchedule(easeFactor, intervalDays, repetitions, nextReviewAt, lastReviewedAt, incomingUpdatedAt);
+        return true;
+    }
+
+    private void ApplySchedule(
+        decimal easeFactor,
+        int intervalDays,
+        int repetitions,
+        DateOnly nextReviewAt,
+        DateTimeOffset? lastReviewedAt,
+        DateTimeOffset updatedAt)
+    {
         ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(easeFactor, 0m);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(intervalDays);
         Guard.NonNegative(repetitions, nameof(repetitions));
@@ -84,7 +129,7 @@ public sealed class SpacedRepetitionRecord
         IntervalDays = intervalDays;
         Repetitions = repetitions;
         NextReviewAt = nextReviewAt;
-        LastReviewedAt = utcNow;
-        UpdatedAt = utcNow;
+        LastReviewedAt = lastReviewedAt;
+        UpdatedAt = updatedAt;
     }
 }

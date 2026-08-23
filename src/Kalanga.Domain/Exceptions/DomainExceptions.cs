@@ -219,3 +219,22 @@ public sealed class DuplicateLearnerProgressException : DomainException
     {
     }
 }
+
+public sealed class InvalidSyncPayloadException : DomainException
+{
+    public InvalidSyncPayloadException(string message)
+        : base(message)
+    {
+    }
+}
+
+public sealed class DuplicateSyncPushException : DomainException
+{
+    public DuplicateSyncPushException(string clientOperationId)
+        : base("This sync payload has already been applied.")
+    {
+        ClientOperationId = clientOperationId;
+    }
+
+    public string ClientOperationId { get; }
+}

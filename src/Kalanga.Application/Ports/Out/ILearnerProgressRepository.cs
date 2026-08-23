@@ -16,6 +16,12 @@ public interface ILearnerProgressRepository
         UserId userId,
         CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<LearnerProgress>> FindUpdatedSinceAsync(
+        LanguageId languageId,
+        UserId userId,
+        DateTimeOffset updatedAfter,
+        CancellationToken cancellationToken = default);
+
     Task AddAsync(LanguageId languageId, LearnerProgress progress, CancellationToken cancellationToken = default);
 
     Task UpdateAsync(LanguageId languageId, LearnerProgress progress, CancellationToken cancellationToken = default);

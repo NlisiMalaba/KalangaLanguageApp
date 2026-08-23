@@ -18,6 +18,17 @@ public interface ISpacedRepetitionRepository
         DateOnly asOfDate,
         CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<SpacedRepetitionRecord>> FindByUserAsync(
+        LanguageId languageId,
+        UserId userId,
+        CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<SpacedRepetitionRecord>> FindUpdatedSinceAsync(
+        LanguageId languageId,
+        UserId userId,
+        DateTimeOffset updatedAfter,
+        CancellationToken cancellationToken = default);
+
     Task AddAsync(LanguageId languageId, SpacedRepetitionRecord record, CancellationToken cancellationToken = default);
 
     Task UpdateAsync(LanguageId languageId, SpacedRepetitionRecord record, CancellationToken cancellationToken = default);

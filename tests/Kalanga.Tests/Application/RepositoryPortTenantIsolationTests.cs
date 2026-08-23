@@ -9,6 +9,8 @@ public sealed class RepositoryPortTenantIsolationTests
     [
         nameof(IPasswordHasher),
         nameof(ITokenService),
+        nameof(IContentPackManifestSigner),
+        nameof(IUnitOfWork),
     ];
 
     [Fact]
