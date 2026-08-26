@@ -1,5 +1,4 @@
 import { DEFAULT_CATALOG_SKIP, DEFAULT_CATALOG_TAKE, MAX_CATALOG_TAKE } from '@/constants/catalog';
-import { CatalogValidationError } from '@/domain/catalog/errors';
 import type { BrowseLessonCatalogDeps, CatalogFilter } from '@/domain/catalog/ports';
 import {
   LessonDownloadStatus,
@@ -7,18 +6,10 @@ import {
   type CatalogLessonItem,
   type CatalogLessonSummary,
 } from '@/domain/catalog/types';
+import { requireCatalogId } from '@/domain/catalog/validation';
 import type { EntityId } from '@/domain/entities';
 
 const DOWNLOAD_COMPLETE = 'complete';
-
-function requireId(value: string, field: string): EntityId {
-  const id = value.trim();
-  if (id.length === 0) {
-    throw new CatalogValidationError(`${field} is required.`);
-  }
-
-  return id;
-}
 
 function normalizePaging(skip: number | undefined, take: number | undefined): { skip: number; take: number } {
   const resolvedSkip =
@@ -115,8 +106,8 @@ function annotate(
 
 export function createBrowseLessonCatalogUseCase(deps: BrowseLessonCatalogDeps) {
   return async function browseLessonCatalog(input: BrowseLessonCatalogInput): Promise<CatalogLessonItem[]> {
-    const languageId = requireId(input.languageId, 'language_id');
-    const userId = requireId(input.userId, 'user_id');
+    const languageId = requireCatalogId(input.languageId, 'language_id');
+    const userId = requireCatalogId(input.userId, 'user_id');
     const filter = toFilter(input);
 
     const [progress, packs, downloadRows] = await Promise.all([

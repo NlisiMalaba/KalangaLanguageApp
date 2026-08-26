@@ -23,9 +23,16 @@ function summary(overrides: Partial<CatalogLessonSummary> = {}): CatalogLessonSu
   };
 }
 
+function unusedGetLesson(): LessonCatalogApi['getLesson'] {
+  return async () => {
+    throw new Error('getLesson should not be called while browsing.');
+  };
+}
+
 function createDeps(overrides: Partial<BrowseLessonCatalogDeps> = {}): BrowseLessonCatalogDeps {
   const catalogApi: LessonCatalogApi = {
     listPublished: jest.fn(async () => []),
+    getLesson: unusedGetLesson(),
   };
 
   return {
@@ -42,7 +49,10 @@ function createDeps(overrides: Partial<BrowseLessonCatalogDeps> = {}): BrowseLes
 describe('BrowseLessonCatalogUseCase', () => {
   it('reads sqlite first and does not call the API when local lessons exist', async () => {
     const local = summary();
-    const catalogApi: LessonCatalogApi = { listPublished: jest.fn(async () => [summary({ id: 'remote-1' })]) };
+    const catalogApi: LessonCatalogApi = {
+      listPublished: jest.fn(async () => [summary({ id: 'remote-1' })]),
+      getLesson: unusedGetLesson(),
+    };
     const browse = createBrowseLessonCatalogUseCase(
       createDeps({
         listLocalLessons: jest.fn(async () => [local]),
@@ -65,7 +75,7 @@ describe('BrowseLessonCatalogUseCase', () => {
 
   it('falls back to the API when sqlite is empty and the device is online', async () => {
     const remote = summary({ id: 'remote-1' });
-    const catalogApi: LessonCatalogApi = { listPublished: jest.fn(async () => [remote]) };
+    const catalogApi: LessonCatalogApi = { listPublished: jest.fn(async () => [remote]), getLesson: unusedGetLesson() };
     const browse = createBrowseLessonCatalogUseCase(
       createDeps({
         catalogApi,
@@ -88,7 +98,7 @@ describe('BrowseLessonCatalogUseCase', () => {
     const remote = summary({ id: 'remote-1' });
     const browse = createBrowseLessonCatalogUseCase(
       createDeps({
-        catalogApi: { listPublished: async () => [remote] },
+        catalogApi: { listPublished: async () => [remote], getLesson: unusedGetLesson() },
         listContentPacks: async () => [{ id: 'pack-1', lessonIds: ['remote-1'] }],
         listDownloadProgress: async () => [
           { contentPackId: 'pack-1', status: DownloadProgressStatus.InProgress },
@@ -101,7 +111,7 @@ describe('BrowseLessonCatalogUseCase', () => {
   });
 
   it('returns an empty catalog when sqlite is empty and the device is offline', async () => {
-    const catalogApi: LessonCatalogApi = { listPublished: jest.fn(async () => [summary()]) };
+    const catalogApi: LessonCatalogApi = { listPublished: jest.fn(async () => [summary()]), getLesson: unusedGetLesson() };
     const browse = createBrowseLessonCatalogUseCase(
       createDeps({
         catalogApi,
@@ -114,7 +124,10 @@ describe('BrowseLessonCatalogUseCase', () => {
   });
 
   it('offline catalog excludes local lessons that are not in a downloaded pack', async () => {
-    const catalogApi: LessonCatalogApi = { listPublished: jest.fn(async () => [summary({ id: 'remote-1' })]) };
+    const catalogApi: LessonCatalogApi = {
+      listPublished: jest.fn(async () => [summary({ id: 'remote-1' })]),
+      getLesson: unusedGetLesson(),
+    };
     const browse = createBrowseLessonCatalogUseCase(
       createDeps({
         listLocalLessons: async () => [summary({ id: 'on-device' }), summary({ id: 'downloaded' })],

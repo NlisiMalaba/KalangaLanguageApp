@@ -8,3 +8,9 @@ export class CatalogError extends Error {
 export class CatalogValidationError extends CatalogError {}
 
 export class CatalogApiError extends CatalogError {}
+
+export class LessonNotFoundError extends CatalogError {
+  constructor(readonly lessonId: string) {
+    super('This lesson is not available.');
+  }
+}

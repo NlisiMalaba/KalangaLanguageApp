@@ -29,5 +29,5 @@ export type {
 } from './entities';
 
 export { LessonDownloadStatus } from './catalog';
-export type { BrowseLessonCatalogInput, CatalogLessonItem, CatalogLessonSummary } from './catalog';
-export { createBrowseLessonCatalogUseCase } from './catalog';
+export type { BrowseLessonCatalogInput, CatalogLessonItem, CatalogLessonSummary, LessonDetail } from './catalog';
+export { createBrowseLessonCatalogUseCase, createGetLessonUseCase } from './catalog';

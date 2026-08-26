@@ -4,6 +4,7 @@ import { withStore } from '@/lib/database';
 import type { LocalStore } from '@/lib/localStore';
 import { requireLanguageId, requireTenantMatch } from '@/lib/localStore';
 import { mapAudioRecording, type AudioRecordingRow } from '@/lib/mappers';
+import { sqlInPlaceholders } from '@/lib/sqlIn';
 
 const UPSERT_SQL = `
 INSERT INTO audio_recordings (
@@ -56,8 +57,51 @@ export async function listApprovedAudioForPhrase(
   const tenant = requireLanguageId(languageId);
   return withStore(store, async (db) => {
     const rows = await db.getAll<AudioRecordingRow>(
-      `SELECT * FROM audio_recordings WHERE language_id = ? AND phrase_id = ? AND status = ?`,
+      `SELECT * FROM audio_recordings
+       WHERE language_id = ? AND phrase_id = ? AND variation_id IS NULL AND status = ?`,
       [tenant, phraseId, AudioRecordingStatus.Approved],
+    );
+    return rows.map(mapAudioRecording);
+  });
+}
+
+export async function listApprovedAudioForPhrases(
+  languageId: EntityId,
+  phraseIds: readonly EntityId[],
+  store?: LocalStore,
+): Promise<AudioRecording[]> {
+  if (phraseIds.length === 0) {
+    return [];
+  }
+
+  const tenant = requireLanguageId(languageId);
+  return withStore(store, async (db) => {
+    const rows = await db.getAll<AudioRecordingRow>(
+      `SELECT * FROM audio_recordings
+       WHERE language_id = ? AND variation_id IS NULL AND status = ?
+         AND phrase_id IN (${sqlInPlaceholders(phraseIds.length)})`,
+      [tenant, AudioRecordingStatus.Approved, ...phraseIds],
+    );
+    return rows.map(mapAudioRecording);
+  });
+}
+
+export async function listApprovedAudioForVariations(
+  languageId: EntityId,
+  variationIds: readonly EntityId[],
+  store?: LocalStore,
+): Promise<AudioRecording[]> {
+  if (variationIds.length === 0) {
+    return [];
+  }
+
+  const tenant = requireLanguageId(languageId);
+  return withStore(store, async (db) => {
+    const rows = await db.getAll<AudioRecordingRow>(
+      `SELECT * FROM audio_recordings
+       WHERE language_id = ? AND status = ?
+         AND variation_id IN (${sqlInPlaceholders(variationIds.length)})`,
+      [tenant, AudioRecordingStatus.Approved, ...variationIds],
     );
     return rows.map(mapAudioRecording);
   });

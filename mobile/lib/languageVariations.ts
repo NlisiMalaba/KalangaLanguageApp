@@ -3,6 +3,7 @@ import { withStore } from '@/lib/database';
 import type { LocalStore } from '@/lib/localStore';
 import { requireLanguageId, requireTenantMatch } from '@/lib/localStore';
 import { mapLanguageVariation, type LanguageVariationRow } from '@/lib/mappers';
+import { sqlInPlaceholders } from '@/lib/sqlIn';
 
 const UPSERT_SQL = `
 INSERT INTO language_variations (
@@ -42,6 +43,25 @@ export async function listVariationsForPhrase(
     const rows = await db.getAll<LanguageVariationRow>(
       `SELECT * FROM language_variations WHERE language_id = ? AND phrase_id = ?`,
       [tenant, phraseId],
+    );
+    return rows.map(mapLanguageVariation);
+  });
+}
+
+export async function listVariationsForPhrases(
+  languageId: EntityId,
+  phraseIds: readonly EntityId[],
+  store?: LocalStore,
+): Promise<LanguageVariation[]> {
+  if (phraseIds.length === 0) {
+    return [];
+  }
+
+  const tenant = requireLanguageId(languageId);
+  return withStore(store, async (db) => {
+    const rows = await db.getAll<LanguageVariationRow>(
+      `SELECT * FROM language_variations WHERE language_id = ? AND phrase_id IN (${sqlInPlaceholders(phraseIds.length)})`,
+      [tenant, ...phraseIds],
     );
     return rows.map(mapLanguageVariation);
   });

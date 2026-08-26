@@ -1,7 +1,7 @@
 import type { NetworkStatus } from '@/domain/auth/ports';
 import type { EntityId, Instant } from '@/domain/entities';
 import type { Level } from '@/domain/enums';
-import type { CatalogLessonSummary } from './types';
+import type { CatalogLessonSummary, LessonDetail } from './types';
 
 export type CatalogFilter = {
   level?: Level | null;
@@ -27,6 +27,7 @@ export type CatalogDownloadRow = {
 
 export type LessonCatalogApi = {
   listPublished(languageId: EntityId, filter: CatalogFilter): Promise<CatalogLessonSummary[]>;
+  getLesson(languageId: EntityId, lessonId: EntityId): Promise<LessonDetail>;
 };
 
 export type BrowseLessonCatalogDeps = {
@@ -35,5 +36,11 @@ export type BrowseLessonCatalogDeps = {
   listContentPacks: (languageId: EntityId) => Promise<CatalogPackRow[]>;
   listDownloadProgress: (languageId: EntityId) => Promise<CatalogDownloadRow[]>;
   catalogApi: LessonCatalogApi;
+  network: NetworkStatus;
+};
+
+export type GetLessonDeps = {
+  loadLocalLesson: (languageId: EntityId, lessonId: EntityId) => Promise<LessonDetail | null>;
+  catalogApi: Pick<LessonCatalogApi, 'getLesson'>;
   network: NetworkStatus;
 };

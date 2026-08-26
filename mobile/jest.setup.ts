@@ -18,3 +18,5 @@ jest.mock('@react-native-async-storage/async-storage', () =>
 jest.mock('expo-network', () => ({
   getNetworkStateAsync: jest.fn(async () => ({ isConnected: true, isInternetReachable: true })),
 }));
+
+process.env.EXPO_PUBLIC_LANGUAGE_ID ??= '11111111-1111-7111-8111-111111111111';

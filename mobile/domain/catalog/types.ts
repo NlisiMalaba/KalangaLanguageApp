@@ -26,6 +26,44 @@ export type CatalogLessonItem = CatalogLessonSummary & {
   downloadStatus: LessonDownloadStatus;
 };
 
+export type AudioRef = {
+  id: EntityId;
+  cdnUrl: string;
+  fileFormat: string;
+  speakerGender: string;
+  dialectLabel: string | null;
+  durationMs: number;
+};
+
+export type LessonVariationDetail = {
+  id: EntityId;
+  kalangaText: string;
+  registerLabel: string;
+  audio: AudioRef[];
+};
+
+export type LessonPhraseDetail = {
+  id: EntityId;
+  kalangaText: string;
+  englishTranslation: string;
+  sortOrder: number;
+  variations: LessonVariationDetail[];
+  audio: AudioRef[];
+};
+
+export type LessonExerciseDetail = {
+  id: EntityId;
+  exerciseType: string;
+  promptData: string;
+  correctAnswer: string;
+  sortOrder: number;
+};
+
+export type LessonDetail = CatalogLessonSummary & {
+  phrases: LessonPhraseDetail[];
+  exercises: LessonExerciseDetail[];
+};
+
 export type BrowseLessonCatalogInput = {
   languageId: EntityId;
   userId: EntityId;

@@ -31,6 +31,9 @@ function throwingCatalogApi(): LessonCatalogApi {
     listPublished: async () => {
       throw new Error('API must not be called while offline.');
     },
+    getLesson: async () => {
+      throw new Error('API must not be called while offline.');
+    },
   };
 }
 
@@ -100,7 +103,12 @@ describe('offline catalog reflects downloaded content', () => {
 
           const browseOnline = createBrowseLessonCatalogUseCase({
             ...createOfflineDeps(local, downloadedIds, incompleteIds),
-            catalogApi: { listPublished: async () => local },
+            catalogApi: {
+              listPublished: async () => local,
+              getLesson: async () => {
+                throw new Error('getLesson should not be called while browsing.');
+              },
+            },
             listLocalLessons: async () => [],
             network: { isOnline: async () => true },
           });

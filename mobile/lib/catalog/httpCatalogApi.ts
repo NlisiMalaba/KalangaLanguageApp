@@ -1,11 +1,11 @@
-import { Level } from '@/domain/enums';
-import { CatalogApiError } from '@/domain/catalog/errors';
+import { AuthApiError } from '@/domain/auth/errors';
+import { CatalogApiError, LessonNotFoundError } from '@/domain/catalog/errors';
 import type { CatalogFilter, LessonCatalogApi } from '@/domain/catalog/ports';
 import type { CatalogLessonSummary } from '@/domain/catalog/types';
 import type { EntityId } from '@/domain/entities';
+import { mapGetLessonResponse } from '@/lib/catalog/mapGetLessonResponse';
+import { mapLevel, requireNumber, requireString, unwrapId, type IdWire } from '@/lib/catalog/wire';
 import { apiRequest } from '@/utils/api';
-
-type IdWire = string | { value?: unknown } | null | undefined;
 
 type CatalogItemWire = {
   lessonId?: IdWire;
@@ -23,59 +23,17 @@ type CatalogResponseWire = {
   lessons?: CatalogItemWire[];
 };
 
-const LEVEL_BY_NUMBER: Level[] = [Level.Beginner, Level.Intermediate, Level.Advanced];
-
-function unwrapId(value: IdWire, field: string): EntityId {
-  if (typeof value === 'string' && value.length > 0) {
-    return value;
-  }
-
-  if (value && typeof value === 'object' && typeof value.value === 'string' && value.value.length > 0) {
-    return value.value;
-  }
-
-  throw new CatalogApiError(`Catalog response is missing ${field}.`);
-}
-
-function mapLevel(value: unknown): Level {
-  if (typeof value === 'string' && (Object.values(Level) as string[]).includes(value)) {
-    return value as Level;
-  }
-
-  if (typeof value === 'number' && LEVEL_BY_NUMBER[value]) {
-    return LEVEL_BY_NUMBER[value];
-  }
-
-  throw new CatalogApiError('Catalog response has an invalid level.');
-}
-
 function mapItem(item: CatalogItemWire): CatalogLessonSummary {
-  if (typeof item.title !== 'string' || item.title.length === 0) {
-    throw new CatalogApiError('Catalog response is missing a title.');
-  }
-
-  if (typeof item.category !== 'string' || item.category.length === 0) {
-    throw new CatalogApiError('Catalog response is missing a category.');
-  }
-
-  if (typeof item.xpReward !== 'number') {
-    throw new CatalogApiError('Catalog response is missing xpReward.');
-  }
-
-  if (typeof item.updatedAt !== 'string' || item.updatedAt.length === 0) {
-    throw new CatalogApiError('Catalog response is missing updatedAt.');
-  }
-
   return {
     id: unwrapId(item.lessonId, 'lessonId'),
     languageId: unwrapId(item.languageId, 'languageId'),
-    title: item.title,
+    title: requireString(item.title, 'title'),
     level: mapLevel(item.level),
-    category: item.category,
+    category: requireString(item.category, 'category'),
     isScenario: item.isScenario === true,
     scenarioContext: typeof item.scenarioContext === 'string' ? item.scenarioContext : null,
-    xpReward: item.xpReward,
-    updatedAt: item.updatedAt,
+    xpReward: requireNumber(item.xpReward, 'xpReward'),
+    updatedAt: requireString(item.updatedAt, 'updatedAt'),
   };
 }
 
@@ -104,6 +62,23 @@ export function createHttpCatalogApi(): LessonCatalogApi {
       const body = await apiRequest<unknown>(`/lessons?${params.toString()}`, { method: 'GET' });
       const items = mapBrowseLessonCatalogResponse(body);
       return items.filter((item) => item.languageId === languageId);
+    },
+    async getLesson(languageId: EntityId, lessonId: EntityId) {
+      try {
+        const body = await apiRequest<unknown>(`/lessons/${lessonId}`, { method: 'GET' });
+        const detail = mapGetLessonResponse(body);
+        if (detail.languageId !== languageId) {
+          throw new LessonNotFoundError(lessonId);
+        }
+
+        return detail;
+      } catch (error) {
+        if (error instanceof AuthApiError && error.status === 404) {
+          throw new LessonNotFoundError(lessonId);
+        }
+
+        throw error;
+      }
     },
   };
 }

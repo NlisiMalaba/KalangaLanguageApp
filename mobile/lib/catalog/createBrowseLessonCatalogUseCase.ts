@@ -1,8 +1,10 @@
 import type { CatalogLessonSummary } from '@/domain/catalog/types';
-import type { BrowseLessonCatalogDeps } from '@/domain/catalog/ports';
+import type { BrowseLessonCatalogDeps, GetLessonDeps } from '@/domain/catalog/ports';
 import { createBrowseLessonCatalogUseCase } from '@/domain/catalog/browseLessonCatalogUseCase';
+import { createGetLessonUseCase } from '@/domain/catalog/getLessonUseCase';
 import { createExpoNetworkStatus } from '@/lib/auth/expoNetworkStatus';
 import { createHttpCatalogApi } from '@/lib/catalog/httpCatalogApi';
+import { loadLocalLessonDetail } from '@/lib/catalog/loadLocalLessonDetail';
 import { listContentPacks } from '@/lib/contentPacks';
 import { listDownloadProgressForLanguage } from '@/lib/downloadProgress';
 import { listLessonProgressForUser } from '@/lib/lessonProgress';
@@ -54,4 +56,18 @@ export function createDefaultBrowseLessonCatalogUseCase(
   };
 
   return createBrowseLessonCatalogUseCase(deps);
+}
+
+export function createDefaultGetLessonUseCase(
+  overrides: Partial<GetLessonDeps> & { store?: LocalStore } = {},
+) {
+  const store = overrides.store;
+  const deps: GetLessonDeps = {
+    loadLocalLesson: (languageId, lessonId) => loadLocalLessonDetail(languageId, lessonId, store),
+    catalogApi: createHttpCatalogApi(),
+    network: createExpoNetworkStatus(),
+    ...overrides,
+  };
+
+  return createGetLessonUseCase(deps);
 }

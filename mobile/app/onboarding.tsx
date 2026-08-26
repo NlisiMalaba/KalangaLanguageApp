@@ -55,7 +55,7 @@ export default function OnboardingScreen() {
   return (
     <ThemedView style={styles.container}>
       <ThemedText type="title">Welcome</ThemedText>
-      <ThemedText>Choose a starting level, why you are learning, and a few interests.</ThemedText>
+      <ThemedText>Choose a starting level so the catalog opens on the right tier, then why you are learning and a few interests.</ThemedText>
 
       <ThemedText type="subtitle">Starting level</ThemedText>
       <View style={styles.row}>
