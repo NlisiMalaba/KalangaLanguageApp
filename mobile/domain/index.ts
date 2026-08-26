@@ -27,3 +27,7 @@ export type {
   SpacedRepetitionRecord,
   User,
 } from './entities';
+
+export { LessonDownloadStatus } from './catalog';
+export type { BrowseLessonCatalogInput, CatalogLessonItem, CatalogLessonSummary } from './catalog';
+export { createBrowseLessonCatalogUseCase } from './catalog';

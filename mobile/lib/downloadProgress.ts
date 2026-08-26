@@ -117,3 +117,17 @@ export async function listDownloadProgressForPack(
     return rows.map(mapRow);
   });
 }
+
+export async function listDownloadProgressForLanguage(
+  languageId: EntityId,
+  store?: LocalStore,
+): Promise<DownloadProgress[]> {
+  const tenant = requireLanguageId(languageId);
+  return withStore(store, async (db) => {
+    const rows = await db.getAll<DownloadProgressRow>(
+      `SELECT * FROM download_progress WHERE language_id = ?`,
+      [tenant],
+    );
+    return rows.map(mapRow);
+  });
+}

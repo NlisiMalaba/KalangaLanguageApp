@@ -1,9 +1,14 @@
 import type { EntityId, Lesson } from '@/domain/entities';
-import { LessonStatus } from '@/domain/enums';
+import { LessonStatus, type Level } from '@/domain/enums';
 import { withStore } from '@/lib/database';
 import type { LocalStore } from '@/lib/localStore';
 import { requireLanguageId, requireTenantMatch } from '@/lib/localStore';
 import { boolToSql, mapLesson, type LessonRow } from '@/lib/mappers';
+
+export type LessonCatalogFilter = {
+  level?: Level | null;
+  category?: string | null;
+};
 
 const UPSERT_SQL = `
 INSERT INTO lessons (
@@ -68,12 +73,27 @@ export async function getLesson(
 export async function listPublishedLessons(
   languageId: EntityId,
   store?: LocalStore,
+  filter: LessonCatalogFilter = {},
 ): Promise<Lesson[]> {
   const tenant = requireLanguageId(languageId);
+  const category = filter.category?.trim() ? filter.category.trim() : null;
   return withStore(store, async (db) => {
+    const clauses = ['language_id = ?', 'status = ?'];
+    const params: Array<string> = [tenant, LessonStatus.Published];
+
+    if (filter.level) {
+      clauses.push('level = ?');
+      params.push(filter.level);
+    }
+
+    if (category) {
+      clauses.push('category = ?');
+      params.push(category);
+    }
+
     const rows = await db.getAll<LessonRow>(
-      `SELECT * FROM lessons WHERE language_id = ? AND status = ? ORDER BY title`,
-      [tenant, LessonStatus.Published],
+      `SELECT * FROM lessons WHERE ${clauses.join(' AND ')} ORDER BY title`,
+      params,
     );
     return rows.map(mapLesson);
   });
