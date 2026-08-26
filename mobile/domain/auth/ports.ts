@@ -10,6 +10,7 @@ export type PasswordHasher = {
 export type CredentialStore = {
   save(record: StoredAuthRecord): Promise<void>;
   load(): Promise<StoredAuthRecord | null>;
+  updateTokens(tokens: AuthTokens): Promise<void>;
   clear(): Promise<void>;
 };
 

@@ -8,5 +8,6 @@ export {
   DuplicateEmailError,
   InvalidCredentialsError,
   NetworkRequiredError,
+  SessionExpiredError,
   UserSuspendedError,
 } from './errors';

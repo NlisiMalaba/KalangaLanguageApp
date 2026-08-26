@@ -2,6 +2,7 @@ import {
   AuthValidationError,
   DuplicateEmailError,
   InvalidCredentialsError,
+  SessionExpiredError,
   UserSuspendedError,
 } from '@/domain/auth/errors';
 import type { AuthUseCaseDeps } from '@/domain/auth/ports';
@@ -15,7 +16,8 @@ function isRetriableOffline(error: unknown): boolean {
     error instanceof InvalidCredentialsError ||
     error instanceof UserSuspendedError ||
     error instanceof DuplicateEmailError ||
-    error instanceof AuthValidationError
+    error instanceof AuthValidationError ||
+    error instanceof SessionExpiredError
   );
 }
 

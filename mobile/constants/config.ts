@@ -12,3 +12,12 @@ export function getApiBaseUrl(): string {
 
   return DEFAULT_API_BASE_URL;
 }
+
+export function getLanguageId(): string {
+  const fromEnv = process.env.EXPO_PUBLIC_LANGUAGE_ID?.trim();
+  if (!fromEnv) {
+    throw new Error('EXPO_PUBLIC_LANGUAGE_ID is required.');
+  }
+
+  return fromEnv;
+}

@@ -61,6 +61,15 @@ export function createSecureCredentialStore(): CredentialStore {
       };
     },
 
+    async updateTokens(tokens): Promise<void> {
+      const current = await this.load();
+      if (current === null) {
+        return;
+      }
+
+      await this.save({ ...current, tokens });
+    },
+
     async clear(): Promise<void> {
       await Promise.all([
         SecureStore.deleteItemAsync(USER_KEY, secureOptions),

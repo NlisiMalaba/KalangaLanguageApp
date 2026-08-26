@@ -66,6 +66,9 @@ export function createHttpAuthApi(): AuthApi {
           password: input.password,
           displayName: input.displayName,
         },
+        skipAuth: true,
+        skipRefresh: true,
+        mapAuthFailures: true,
       });
       return mapRegister(response);
     },
@@ -77,6 +80,9 @@ export function createHttpAuthApi(): AuthApi {
           email: input.email,
           password: input.password,
         },
+        skipAuth: true,
+        skipRefresh: true,
+        mapAuthFailures: true,
       });
       return mapLogin(response);
     },

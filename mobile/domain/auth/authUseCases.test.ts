@@ -34,6 +34,11 @@ function createMemoryStore(initial: StoredAuthRecord | null = null): CredentialS
       records[0] = record;
     },
     load: async () => records[0] ?? null,
+    updateTokens: async (tokens) => {
+      if (records[0]) {
+        records[0] = { ...records[0], tokens };
+      }
+    },
     clear: async () => {
       records.length = 0;
     },

@@ -31,6 +31,12 @@ export class NetworkRequiredError extends AuthError {
   }
 }
 
+export class SessionExpiredError extends AuthError {
+  constructor() {
+    super('Your session has expired. Please sign in again.');
+  }
+}
+
 export class AuthApiError extends AuthError {
   constructor(
     readonly status: number,
