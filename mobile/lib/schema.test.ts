@@ -24,5 +24,6 @@ describe('local sqlite schema', () => {
     expect(SCHEMA_SQL).toContain('CREATE UNIQUE INDEX IF NOT EXISTS ux_gamification_user_language');
     expect(SCHEMA_SQL).toContain('CREATE UNIQUE INDEX IF NOT EXISTS ux_sync_queue_client_operation');
     expect(SCHEMA_SQL).toContain('CREATE UNIQUE INDEX IF NOT EXISTS ux_download_progress_file');
+    expect(SCHEMA_SQL).toContain('CREATE UNIQUE INDEX IF NOT EXISTS ux_sync_checkpoints_user_language');
   });
 });

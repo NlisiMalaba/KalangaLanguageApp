@@ -1,7 +1,10 @@
+import { MAX_SYNC_ATTEMPTS } from '@/constants/sync';
 import type { EntityId } from '@/domain/entities';
 import { withStore } from '@/lib/database';
 import type { LocalStore, SqlValue } from '@/lib/localStore';
 import { requireLanguageId, requireTenantMatch } from '@/lib/localStore';
+
+export { MAX_SYNC_ATTEMPTS };
 
 export const SyncQueueStatus = {
   Pending: 'pending',
@@ -13,10 +16,9 @@ export const SyncQueueEntityType = {
   Progress: 'progress',
   SpacedRepetition: 'spaced_repetition',
   Gamification: 'gamification',
+  ExerciseResult: 'exercise_result',
 } as const;
 export type SyncQueueEntityType = (typeof SyncQueueEntityType)[keyof typeof SyncQueueEntityType];
-
-export const MAX_SYNC_ATTEMPTS = 5;
 
 export type SyncQueueItem = {
   id: EntityId;
@@ -116,17 +118,37 @@ export async function listPendingSync(
   });
 }
 
+export async function countDeadLetterSync(
+  languageId: EntityId,
+  userId: EntityId,
+  store?: LocalStore,
+): Promise<number> {
+  const tenant = requireLanguageId(languageId);
+  return withStore(store, async (db) => {
+    const row = await db.getFirst<{ n: number }>(
+      `SELECT COUNT(*) AS n FROM sync_queue
+       WHERE language_id = ? AND user_id = ? AND status = ?`,
+      [tenant, userId, SyncQueueStatus.DeadLetter],
+    );
+    return row?.n ?? 0;
+  });
+}
+
 export async function markSyncAttempt(
   languageId: EntityId,
   id: EntityId,
-  succeeded: boolean,
-  utcNow: string,
-  error?: string,
+  input: {
+    succeeded: boolean;
+    utcNow: string;
+    error?: string;
+    nextAttemptAt?: string | null;
+    forceDeadLetter?: boolean;
+  },
   store?: LocalStore,
 ): Promise<void> {
   const tenant = requireLanguageId(languageId);
   await withStore(store, async (db) => {
-    if (succeeded) {
+    if (input.succeeded) {
       await db.run(`DELETE FROM sync_queue WHERE id = ? AND language_id = ?`, [id, tenant]);
       return;
     }
@@ -140,7 +162,7 @@ export async function markSyncAttempt(
     }
 
     const attempts = row.attempts + 1;
-    const dead = attempts >= row.max_attempts;
+    const dead = input.forceDeadLetter === true || attempts >= row.max_attempts;
     await db.run(
       `UPDATE sync_queue SET
          attempts = ?,
@@ -152,9 +174,9 @@ export async function markSyncAttempt(
       [
         attempts,
         dead ? SyncQueueStatus.DeadLetter : SyncQueueStatus.Pending,
-        error ?? null,
-        dead ? null : utcNow,
-        utcNow,
+        input.error ?? null,
+        dead ? null : (input.nextAttemptAt ?? input.utcNow),
+        input.utcNow,
         id,
         tenant,
       ],

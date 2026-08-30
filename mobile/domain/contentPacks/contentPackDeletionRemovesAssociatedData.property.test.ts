@@ -37,7 +37,10 @@ describe('content pack deletion removes all associated data', () => {
     await fc.assert(
       fc.asyncProperty(packsArb, async (samples) => {
         const packs = samples.map((sample) => pack(sample.id, sample.lessonIds, sample.sizeBytes));
-        const filesByPack = new Map(
+        const filesByPack = new Map<
+          string,
+          { recordingId: string; localPath: string | null }[]
+        >(
           samples.map((sample) => [
             sample.id,
             Array.from({ length: sample.fileCount }, (_, index) => ({

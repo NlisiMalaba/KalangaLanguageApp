@@ -1,4 +1,5 @@
 import type { EntityId, SpacedRepetitionRecord } from '@/domain/entities';
+import { enqueueLearnerWrite } from '@/lib/sync/enqueueLearnerWrite';
 import { withStore } from '@/lib/database';
 import type { LocalStore } from '@/lib/localStore';
 import { requireLanguageId, requireTenantMatch } from '@/lib/localStore';
@@ -24,6 +25,7 @@ export async function upsertSpacedRepetition(
   languageId: EntityId,
   record: SpacedRepetitionRecord,
   store?: LocalStore,
+  options?: { skipSyncQueue?: boolean },
 ): Promise<void> {
   const tenant = requireTenantMatch(languageId, record.languageId);
   await withStore(store, (db) =>
@@ -41,6 +43,19 @@ export async function upsertSpacedRepetition(
       record.updatedAt,
     ]),
   );
+
+  if (!options?.skipSyncQueue) {
+    await enqueueLearnerWrite(
+      {
+        languageId: tenant,
+        userId: record.userId,
+        entityType: 'spaced_repetition',
+        clientOperationId: `srs:${record.id}:${record.updatedAt}`,
+        payload: record,
+      },
+      store,
+    );
+  }
 }
 
 export async function findSpacedRepetition(

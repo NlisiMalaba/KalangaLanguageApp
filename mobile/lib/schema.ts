@@ -225,6 +225,17 @@ CREATE UNIQUE INDEX IF NOT EXISTS ux_download_progress_file
   ON download_progress(content_pack_id, recording_id);
 CREATE INDEX IF NOT EXISTS idx_download_progress_language
   ON download_progress(language_id);
+
+CREATE TABLE IF NOT EXISTS sync_checkpoints (
+  id TEXT PRIMARY KEY NOT NULL,
+  language_id TEXT NOT NULL,
+  user_id TEXT NOT NULL,
+  sync_version INTEGER NOT NULL DEFAULT 0,
+  last_synced_at TEXT NOT NULL
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS ux_sync_checkpoints_user_language
+  ON sync_checkpoints(user_id, language_id);
 `;
 
 export const REQUIRED_TABLES = [
@@ -241,4 +252,5 @@ export const REQUIRED_TABLES = [
   'sync_queue',
   'content_packs',
   'download_progress',
+  'sync_checkpoints',
 ] as const;

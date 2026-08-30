@@ -12,17 +12,20 @@ import { getLanguageId } from '@/constants/config';
 import { Colors } from '@/constants/theme';
 import { useAuth } from '@/ctx/AuthContext';
 import type { GetProgressResult } from '@/domain/progress/types';
+import type { SyncStatus } from '@/domain/sync/types';
 import type { StorageSummary } from '@/domain/contentPacks/storage';
 import type { ContentPackListItem, DownloadContentPackResult, PackDownloadProgress } from '@/domain/contentPacks/types';
 import { ContentPackError } from '@/domain/contentPacks/errors';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useSpeakingListeningStats } from '@/hooks/useSpeakingListeningStats';
 import { createDefaultGetProgressUseCase } from '@/lib/createGetProgressUseCase';
+import { createDefaultSyncService } from '@/lib/createSyncService';
 import { createDefaultContentPackDownloader } from '@/lib/contentPacks/createContentPackDownloader';
 import { createDefaultStorageManager } from '@/lib/contentPacks/createStorageManager';
 import { createHttpContentPackApi } from '@/lib/contentPacks/httpContentPackApi';
 
 const defaultGetProgress = createDefaultGetProgressUseCase();
+const defaultSync = createDefaultSyncService();
 const defaultListPacks = createHttpContentPackApi().listPacks;
 const defaultDownloadPack = createDefaultContentPackDownloader();
 const defaultStorage = createDefaultStorageManager();
@@ -45,6 +48,8 @@ export default function ProfileScreen({
   downloadPack = defaultDownloadPack,
   getStorageSummary = defaultStorage.getSummary,
   deletePack = defaultStorage.deletePack,
+  getSyncStatus = (input: { languageId: string; userId: string }) =>
+    defaultSync.status(input.languageId, input.userId),
 }: {
   getProgress?: (input: { languageId: string; userId: string }) => Promise<GetProgressResult>;
   listPacks?: (languageId: string) => Promise<ContentPackListItem[]>;
@@ -55,6 +60,7 @@ export default function ProfileScreen({
   }) => Promise<DownloadContentPackResult>;
   getStorageSummary?: (languageId: string) => Promise<StorageSummary>;
   deletePack?: (languageId: string, packId: string) => Promise<void>;
+  getSyncStatus?: (input: { languageId: string; userId: string }) => Promise<SyncStatus>;
 }) {
   const { user, signOut } = useAuth();
   const scheme = useColorScheme() ?? 'light';
@@ -63,12 +69,14 @@ export default function ProfileScreen({
   const [progress, setProgress] = useState<GetProgressResult | null>(null);
   const [packs, setPacks] = useState<ContentPackListItem[]>([]);
   const [storage, setStorage] = useState<StorageSummary | null>(null);
+  const [syncStatus, setSyncStatus] = useState<SyncStatus | null>(null);
   const [deletingPackId, setDeletingPackId] = useState<string | null>(null);
   const [loading, setLoading] = useState(Boolean(user));
 
   const load = useCallback(async () => {
     if (!user) {
       setProgress(null);
+      setSyncStatus(null);
       setLoading(false);
       return;
     }
@@ -92,10 +100,16 @@ export default function ProfileScreen({
       setStorage(await getStorageSummary(getLanguageId()));
     } catch {
       setStorage({ totalBytes: 0, packs: [] });
+    }
+
+    try {
+      setSyncStatus(await getSyncStatus({ languageId: getLanguageId(), userId: user.id }));
+    } catch {
+      setSyncStatus(null);
     } finally {
       setLoading(false);
     }
-  }, [getProgress, getStorageSummary, listPacks, user]);
+  }, [getProgress, getStorageSummary, getSyncStatus, listPacks, user]);
 
   useFocusEffect(
     useCallback(() => {
@@ -120,6 +134,20 @@ export default function ProfileScreen({
         <ThemedText type="title">Profile</ThemedText>
         <ThemedText type="subtitle">{user.displayName}</ThemedText>
         <ThemedText style={{ color: colors.icon }}>{user.email}</ThemedText>
+
+        <View style={styles.section}>
+          <ThemedText type="subtitle">Sync</ThemedText>
+          <ThemedText accessibilityLabel="Last successful sync">
+            {syncStatus?.lastSyncedAt
+              ? `Last synced ${syncStatus.lastSyncedAt}`
+              : 'Not synced yet'}
+          </ThemedText>
+          {syncStatus && syncStatus.deadLetterCount > 0 ? (
+            <ThemedText accessibilityLabel="Sync failed after retries">
+              Sync failed after 5 attempts. Some changes need attention.
+            </ThemedText>
+          ) : null}
+        </View>
 
         {loading && !progress ? <ActivityIndicator /> : null}
 

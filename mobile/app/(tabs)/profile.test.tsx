@@ -84,11 +84,17 @@ describe('ProfileScreen', () => {
           getProgress={getProgress}
           listPacks={async () => []}
           getStorageSummary={async () => ({ totalBytes: 0, packs: [] })}
+          getSyncStatus={async () => ({
+            lastSyncedAt: '2026-08-22T12:00:00.000Z',
+            syncVersion: 2,
+            deadLetterCount: 0,
+          })}
         />
       </AuthContext.Provider>,
     );
 
     await waitFor(() => expect(getByText('40 XP')).toBeTruthy());
+    expect(getByText('Last synced 2026-08-22T12:00:00.000Z')).toBeTruthy();
     expect(getByText('Ada')).toBeTruthy();
     expect(getByLabelText('Streak 2 days')).toBeTruthy();
     expect(getByText('Level: Beginner')).toBeTruthy();
@@ -100,5 +106,24 @@ describe('ProfileScreen', () => {
 
     fireEvent.press(getByLabelText('Sign out'));
     expect(auth.signOut).toHaveBeenCalled();
+  });
+
+  it('surfaces dead-lettered sync failures', async () => {
+    const { getByLabelText } = render(
+      <AuthContext.Provider value={auth}>
+        <ProfileScreen
+          getProgress={async () => progress}
+          listPacks={async () => []}
+          getStorageSummary={async () => ({ totalBytes: 0, packs: [] })}
+          getSyncStatus={async () => ({
+            lastSyncedAt: null,
+            syncVersion: 0,
+            deadLetterCount: 2,
+          })}
+        />
+      </AuthContext.Provider>,
+    );
+
+    await waitFor(() => expect(getByLabelText('Sync failed after retries')).toBeTruthy());
   });
 });

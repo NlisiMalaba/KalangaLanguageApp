@@ -21,3 +21,7 @@ export function newSyncId(): string {
 export function newExerciseResultId(): string {
   return newId('exr');
 }
+
+export function newSrsId(): string {
+  return newId('srs');
+}

@@ -6,6 +6,7 @@ import { withStore } from '@/lib/database';
 import type { LocalStore } from '@/lib/localStore';
 import { requireLanguageId } from '@/lib/localStore';
 import { boolToSql } from '@/lib/mappers';
+import { enqueueLearnerWrite } from '@/lib/sync/enqueueLearnerWrite';
 
 export type ExerciseResultRow = {
   lesson_id: string;
@@ -26,13 +27,15 @@ export async function insertExerciseResult(
 ): Promise<void> {
   const tenant = requireLanguageId(input.languageId);
   const score = Math.min(MAX_LESSON_SCORE, Math.max(0, input.score));
+  const id = newExerciseResultId();
+  const row = { id, ...input, score };
   await withStore(store, (db) =>
     db.run(
       `INSERT INTO exercise_results (
         id, language_id, user_id, exercise_id, lesson_id, is_correct, score, answered_at
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [
-        newExerciseResultId(),
+        id,
         tenant,
         input.userId,
         input.exerciseId,
@@ -42,6 +45,16 @@ export async function insertExerciseResult(
         input.answeredAt,
       ],
     ),
+  );
+  await enqueueLearnerWrite(
+    {
+      languageId: tenant,
+      userId: input.userId,
+      entityType: 'exercise_result',
+      clientOperationId: `exercise_result:${id}`,
+      payload: row,
+    },
+    store,
   );
 }
 
