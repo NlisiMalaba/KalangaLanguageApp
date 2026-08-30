@@ -4,7 +4,7 @@ namespace Kalanga.Domain.Entities;
 
 public sealed class Language
 {
-    private Language(
+    internal Language(
         LanguageId id,
         string code,
         string name,

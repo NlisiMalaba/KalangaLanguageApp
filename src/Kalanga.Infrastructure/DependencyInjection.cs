@@ -31,6 +31,8 @@ public static class DependencyInjection
         services.AddSingleton<IContentPackManifestSigner, HmacContentPackManifestSigner>();
 
         services.AddSingleton<ICatalogCache, MemoryCatalogCache>();
+        services.AddScoped<ILanguageRepository, LanguageRepository>();
+        services.AddScoped<DevelopmentLanguageSeeder>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IPlatformMetricsReader, PlatformMetricsReader>();
@@ -64,5 +66,14 @@ public static class DependencyInjection
         services.AddSingleton<IAudioStorage, ResilientAudioStorage>();
 
         return services;
+    }
+
+    public static async Task SeedDevelopmentDataAsync(
+        this IServiceProvider services,
+        CancellationToken cancellationToken = default)
+    {
+        await using var scope = services.CreateAsyncScope();
+        var seeder = scope.ServiceProvider.GetRequiredService<DevelopmentLanguageSeeder>();
+        await seeder.EnsureKalangaAsync(cancellationToken);
     }
 }

@@ -51,6 +51,8 @@ public sealed class DomainExceptionHandler(IProblemDetailsService problemDetails
         exception switch
         {
             DuplicateEmailException => (StatusCodes.Status409Conflict, "Conflict"),
+            DuplicateLanguageCodeException => (StatusCodes.Status409Conflict, "Conflict"),
+            LanguageNotFoundException => (StatusCodes.Status404NotFound, "Not Found"),
             DuplicateLearnerProgressException => (StatusCodes.Status409Conflict, "Conflict"),
             InvalidCredentialsException => (StatusCodes.Status401Unauthorized, "Unauthorized"),
             InvalidRefreshTokenException => (StatusCodes.Status401Unauthorized, "Unauthorized"),

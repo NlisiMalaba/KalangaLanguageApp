@@ -3,6 +3,18 @@ using Kalanga.Application.Dtos;
 
 namespace Kalanga.Application.Validation;
 
+public sealed class CreateLanguageCommandValidator : AbstractValidator<CreateLanguageCommand>
+{
+    public CreateLanguageCommandValidator()
+    {
+        RuleFor(x => x.ActorLanguageId.Value).NotEmpty();
+        RuleFor(x => x.ActorUserId.Value).NotEmpty();
+        RuleFor(x => x.Code).NotEmpty().MaximumLength(10);
+        RuleFor(x => x.Name).NotEmpty().MaximumLength(100);
+        RuleFor(x => x.Region).NotEmpty().MaximumLength(100);
+    }
+}
+
 public sealed class SubmitRequestCommandValidator : AbstractValidator<SubmitRequestCommand>
 {
     public SubmitRequestCommandValidator()

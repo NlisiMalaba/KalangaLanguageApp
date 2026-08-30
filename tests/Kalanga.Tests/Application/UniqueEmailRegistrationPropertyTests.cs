@@ -39,7 +39,7 @@ public sealed class UniqueEmailRegistrationPropertyTests(PostgresFixture postgre
                 await SeedLanguageAsync(db, languageId);
 
                 var users = new UserRepository(db);
-                var useCase = new RegisterUserUseCase(users, new FastPasswordHasher());
+                var useCase = new RegisterUserUseCase(users, new LanguageRepository(db), new FastPasswordHasher());
                 var command = new RegisterUserCommand(languageId, email, password, displayName);
 
                 var first = await useCase.ExecuteAsync(command);

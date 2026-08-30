@@ -7,6 +7,26 @@ namespace Kalanga.Infrastructure.Persistence.Mapping;
 
 internal static class RecordMappers
 {
+    public static Language ToDomain(this LanguageRecord record) =>
+        new(
+            LanguageId.From(record.Id),
+            record.Code,
+            record.Name,
+            record.Region,
+            record.IsActive,
+            record.CreatedAt);
+
+    public static LanguageRecord ToRecord(this Language language) =>
+        new()
+        {
+            Id = language.Id.Value,
+            Code = language.Code,
+            Name = language.Name,
+            Region = language.Region,
+            IsActive = language.IsActive,
+            CreatedAt = language.CreatedAt,
+        };
+
     public static User ToDomain(this UserRecord record) =>
         new(
             UserId.From(record.Id),
