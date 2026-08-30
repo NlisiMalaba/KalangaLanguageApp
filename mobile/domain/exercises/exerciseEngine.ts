@@ -40,6 +40,16 @@ export function createExerciseEngine(deps: ExerciseEngineDeps): ExerciseEngine {
         await deps.flagPhraseForReview({ languageId, userId, phraseId: result.phraseId });
       }
 
+      await deps.recordExerciseResult?.({
+        languageId,
+        userId,
+        exerciseId: exercise.id,
+        lessonId: exercise.lessonId,
+        isCorrect: result.correct,
+        score: result.correct ? 100 : 0,
+        answeredAt: new Date().toISOString(),
+      });
+
       return result;
     },
   };

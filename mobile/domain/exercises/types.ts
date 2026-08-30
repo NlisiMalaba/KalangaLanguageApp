@@ -58,6 +58,16 @@ export type FlagPhraseForReview = (input: {
   phraseId: EntityId;
 }) => Promise<void>;
 
+export type RecordExerciseResult = (input: {
+  languageId: EntityId;
+  userId: EntityId;
+  exerciseId: EntityId;
+  lessonId: EntityId;
+  isCorrect: boolean;
+  score: number;
+  answeredAt: string;
+}) => Promise<void>;
+
 export type ListLessonExercises = (
   languageId: EntityId,
   lessonId: EntityId,
@@ -66,6 +76,7 @@ export type ListLessonExercises = (
 export type ExerciseEngineDeps = {
   listExercises: ListLessonExercises;
   flagPhraseForReview: FlagPhraseForReview;
+  recordExerciseResult?: RecordExerciseResult;
 };
 
 export function isChoiceType(

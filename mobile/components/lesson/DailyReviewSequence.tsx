@@ -14,6 +14,7 @@ import type { ExerciseAttempt, GradeResult } from '@/domain/exercises/types';
 import { prepareReviewExercises, type ReviewPrompt } from '@/domain/progress/dailyReview';
 import type { EntityId } from '@/domain/entities';
 import type { SpacedRepetitionEngine } from '@/domain/srs/spacedRepetitionEngine';
+import { addListeningMs } from '@/lib/speakingListeningStats';
 
 function stubLesson(languageId: EntityId): LessonDetail {
   return {
@@ -153,6 +154,9 @@ export function DailyReviewSequence({
         disabled={Boolean(result) || busy}
         selectedIndex={null}
         onAttempt={onAttempt}
+        onHeardMs={(durationMs) => {
+          void addListeningMs(userId, durationMs);
+        }}
       />
       {result ? (
         <View accessibilityLabel={result.correct ? 'Correct' : 'Incorrect'}>

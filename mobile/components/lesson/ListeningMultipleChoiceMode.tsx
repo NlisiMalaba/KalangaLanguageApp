@@ -15,6 +15,7 @@ export function ListeningMultipleChoiceMode({
   disabled = false,
   onSelect,
   createPlayer,
+  onHeardMs,
 }: {
   languageId: EntityId;
   recordings: readonly AudioRef[];
@@ -24,6 +25,7 @@ export function ListeningMultipleChoiceMode({
   disabled?: boolean;
   onSelect: (index: number) => void;
   createPlayer?: AudioPlayerFactory;
+  onHeardMs?: (durationMs: number) => void;
 }) {
   return (
     <View style={styles.container}>
@@ -33,6 +35,7 @@ export function ListeningMultipleChoiceMode({
         recordings={recordings}
         ttsText={ttsText}
         createPlayer={createPlayer}
+        onHeardMs={onHeardMs}
       />
       <MultipleChoiceMode
         prompt={undefined}

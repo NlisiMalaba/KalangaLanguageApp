@@ -104,6 +104,20 @@ CREATE UNIQUE INDEX IF NOT EXISTS ux_learner_progress_user_lesson
 CREATE INDEX IF NOT EXISTS idx_progress_user
   ON learner_progress(user_id, language_id);
 
+CREATE TABLE IF NOT EXISTS exercise_results (
+  id TEXT PRIMARY KEY NOT NULL,
+  language_id TEXT NOT NULL,
+  user_id TEXT NOT NULL,
+  exercise_id TEXT NOT NULL,
+  lesson_id TEXT NOT NULL,
+  is_correct INTEGER NOT NULL,
+  score INTEGER NOT NULL,
+  answered_at TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_exercise_results_user
+  ON exercise_results(user_id, language_id);
+
 CREATE TABLE IF NOT EXISTS spaced_repetition_records (
   id TEXT PRIMARY KEY NOT NULL,
   language_id TEXT NOT NULL,
@@ -220,6 +234,7 @@ export const REQUIRED_TABLES = [
   'audio_recordings',
   'exercises',
   'learner_progress',
+  'exercise_results',
   'spaced_repetition_records',
   'learner_gamification',
   'requests',

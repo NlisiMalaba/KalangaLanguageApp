@@ -19,6 +19,7 @@ import {
 import type { PronunciationRecorder } from '@/domain/pronunciation/pronunciationRecorder';
 import type { PronunciationScore, PronunciationTransmitter } from '@/domain/pronunciation/types';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { addListeningMs, addSpeakingMs } from '@/lib/speakingListeningStats';
 
 const skippedTransmitter: PronunciationTransmitter = {
   async upload() {
@@ -36,6 +37,7 @@ export function PronunciationPractice({
   createPlayer,
   consentGranted = false,
   transmitter = skippedTransmitter,
+  userId,
 }: {
   languageId: EntityId;
   phrase: LessonPhraseDetail;
@@ -44,6 +46,7 @@ export function PronunciationPractice({
   createPlayer?: AudioPlayerFactory;
   consentGranted?: boolean;
   transmitter?: PronunciationTransmitter;
+  userId?: EntityId;
 }) {
   const scheme = useColorScheme() ?? 'light';
   const colors = Colors[scheme];
@@ -122,6 +125,9 @@ export function PronunciationPractice({
         const learner = await recorder.stop();
         recordingRef.current = false;
         setRecording(false);
+        if (userId) {
+          void addSpeakingMs(userId, learner.durationMs);
+        }
         const result = await finishPronunciationPractice({
           learner,
           reference: referenceSampleFromAudio(selectedReference),
@@ -157,6 +163,7 @@ export function PronunciationPractice({
         recordings={recordings}
         ttsText={phrase.kalangaText}
         createPlayer={createPlayer}
+        onHeardMs={userId ? (durationMs) => void addListeningMs(userId, durationMs) : undefined}
       />
 
       <View style={styles.recordRow}>

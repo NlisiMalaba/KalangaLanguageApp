@@ -13,12 +13,14 @@ export function ExercisePlayer({
   disabled,
   selectedIndex,
   onAttempt,
+  onHeardMs,
 }: {
   lesson: LessonDetail;
   exercise: ParsedExercise;
   disabled: boolean;
   selectedIndex: number | null;
   onAttempt: (attempt: ExerciseAttempt) => void;
+  onHeardMs?: (durationMs: number) => void;
 }) {
   if (exercise.type === ExerciseType.Flashcard) {
     return (
@@ -56,6 +58,7 @@ export function ExercisePlayer({
         selectedIndex={selectedIndex}
         disabled={disabled}
         onSelect={(index) => onAttempt({ kind: ExerciseType.Listening, selectedIndex: index })}
+        onHeardMs={onHeardMs}
       />
     );
   }

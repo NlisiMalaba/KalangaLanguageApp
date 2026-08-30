@@ -199,6 +199,7 @@ export default function PractiseScreen({
               phrase={phrase}
               recordings={recordingsForPhrase(phrase)}
               createRecorder={createRecorder}
+              userId={user?.id}
             />
             {lesson.phrases.length > 1 ? (
               <View style={styles.nav}>

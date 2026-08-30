@@ -17,6 +17,7 @@ import {
 } from '@/domain/exercises/prepareExercises';
 import type { CompleteLessonResult } from '@/domain/progress/completeLessonUseCase';
 import type { ExerciseAttempt, GradeResult } from '@/domain/exercises/types';
+import { addListeningMs } from '@/lib/speakingListeningStats';
 
 export function ExerciseSequence({
   lesson,
@@ -178,6 +179,9 @@ export function ExerciseSequence({
         disabled={Boolean(result) || busy}
         selectedIndex={selectedIndex}
         onAttempt={onAttempt}
+        onHeardMs={(durationMs) => {
+          void addListeningMs(userId, durationMs);
+        }}
       />
       {result ? (
         <View accessibilityLabel={result.correct ? 'Correct' : 'Incorrect'}>

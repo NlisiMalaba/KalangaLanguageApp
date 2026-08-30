@@ -27,6 +27,7 @@ export type AudioPromptProps = {
   recordings: readonly AudioRef[];
   ttsText: string;
   createPlayer?: AudioPlayerFactory;
+  onHeardMs?: (durationMs: number) => void;
 };
 
 function recordingLabel(recording: AudioRef, index: number): string {
@@ -43,6 +44,7 @@ export function AudioPrompt({
   recordings,
   ttsText,
   createPlayer = defaultCreatePlayer,
+  onHeardMs,
 }: AudioPromptProps) {
   const scheme = useColorScheme() ?? 'light';
   const colors = Colors[scheme];
@@ -81,6 +83,7 @@ export function AudioPrompt({
     const selected = recordings.find((item) => item.id === selectedId);
     const durationMs = Math.max(400, Math.round((selected?.durationMs ?? 1500) / nextRate));
     setPlaying(true);
+    onHeardMs?.(durationMs);
     playingTimeout.current = setTimeout(() => setPlaying(false), durationMs);
   };
 

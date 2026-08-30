@@ -17,3 +17,7 @@ export function newGamificationId(): string {
 export function newSyncId(): string {
   return newId('sync');
 }
+
+export function newExerciseResultId(): string {
+  return newId('exr');
+}
