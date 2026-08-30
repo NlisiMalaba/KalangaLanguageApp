@@ -1,0 +1,5 @@
+export const MAX_LESSON_SCORE = 100;
+export const INTERMEDIATE_XP_THRESHOLD = 500;
+export const ADVANCED_XP_THRESHOLD = 2000;
+export const WEAK_AREA_SCORE_THRESHOLD = 70;
+export const MS_PER_MINUTE = 60_000;

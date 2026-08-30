@@ -1,0 +1,2 @@
+export const MIN_FREE_DISK_BYTES = 50 * 1024 * 1024;
+export const CONTENT_PACK_DOWNLOAD_TIMEOUT_MS = 120_000;
