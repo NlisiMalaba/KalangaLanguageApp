@@ -79,6 +79,9 @@ export default function LessonScreen() {
             onPractisePhrase={(phraseId) =>
               router.push({ pathname: '/practise', params: { lessonId: lesson.id, phraseId } })
             }
+            onStartExercises={() =>
+              router.push({ pathname: '/practise', params: { lessonId: lesson.id, mode: 'exercises' } })
+            }
           />
         ) : null}
       </ScrollView>

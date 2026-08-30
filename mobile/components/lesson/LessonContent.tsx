@@ -12,9 +12,11 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 export function LessonContent({
   lesson,
   onPractisePhrase,
+  onStartExercises,
 }: {
   lesson: LessonDetail;
   onPractisePhrase?: (phraseId: EntityId) => void;
+  onStartExercises?: () => void;
 }) {
   const scheme = useColorScheme() ?? 'light';
   const colors = Colors[scheme];
@@ -45,6 +47,14 @@ export function LessonContent({
           <ThemedText type="link">Practise pronunciation</ThemedText>
         </Pressable>
       ) : null}
+      {onStartExercises && lesson.exercises.length > 0 ? (
+        <Pressable
+          onPress={onStartExercises}
+          accessibilityRole="button"
+          accessibilityLabel="Start exercises">
+          <ThemedText type="link">Start exercises</ThemedText>
+        </Pressable>
+      ) : null}
       {lesson.phrases.map((phrase) => (
         <View key={phrase.id} style={[styles.block, { borderColor: colors.icon }]}>
           <ThemedText type="defaultSemiBold">{phrase.kalangaText}</ThemedText>
@@ -73,12 +83,11 @@ export function LessonContent({
 
       <ThemedText type="subtitle">Exercises</ThemedText>
       {lesson.exercises.length === 0 ? <ThemedText>No exercises in this lesson yet.</ThemedText> : null}
-      {lesson.exercises.map((exercise) => (
-        <View key={exercise.id} style={[styles.block, { borderColor: colors.icon }]}>
-          <ThemedText type="defaultSemiBold">{exercise.exerciseType}</ThemedText>
-          <ThemedText>{exercise.promptData}</ThemedText>
-        </View>
-      ))}
+      {lesson.exercises.length > 0 ? (
+        <ThemedText style={{ color: colors.icon }}>
+          {lesson.exercises.length} exercise{lesson.exercises.length === 1 ? '' : 's'} in this lesson
+        </ThemedText>
+      ) : null}
     </ThemedView>
   );
 }

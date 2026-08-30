@@ -53,9 +53,18 @@ describe('LessonContent', () => {
     expect(getAllByText('Ndinoda tomato').length).toBeGreaterThan(0);
     expect(getByText('I want tomatoes')).toBeTruthy();
     expect(getByText('Polite')).toBeTruthy();
-    expect(getByText('Flashcard')).toBeTruthy();
-    expect(getByText('Translate: I want tomatoes')).toBeTruthy();
+    expect(getByText('1 exercise in this lesson')).toBeTruthy();
     expect(getByText('Play')).toBeTruthy();
+  });
+
+  it('starts the lesson exercise sequence', () => {
+    const onStartExercises = jest.fn();
+    const { getByLabelText } = render(
+      <LessonContent lesson={lesson} onStartExercises={onStartExercises} />,
+    );
+
+    fireEvent.press(getByLabelText('Start exercises'));
+    expect(onStartExercises).toHaveBeenCalled();
   });
 
   it('offers pronunciation practice for a phrase', () => {

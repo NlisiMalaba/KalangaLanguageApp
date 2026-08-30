@@ -1,0 +1,4 @@
+export const MULTIPLE_CHOICE_OPTION_COUNT = 4;
+export const MIN_SENTENCE_TOKENS = 2;
+export const DEFAULT_SRS_EASE_FACTOR = 2.5;
+export const DEFAULT_SRS_INTERVAL_DAYS = 1;

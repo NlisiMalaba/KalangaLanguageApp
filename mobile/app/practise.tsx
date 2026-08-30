@@ -1,36 +1,49 @@
 import { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { toast } from 'sonner-native';
 
+import { ExerciseSequence } from '@/components/lesson/ExerciseSequence';
 import { PronunciationPractice } from '@/components/pronunciation/PronunciationPractice';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { getLanguageId } from '@/constants/config';
 import { Colors } from '@/constants/theme';
+import { useAuth } from '@/ctx/AuthContext';
 import { recordingsForPhrase } from '@/domain/audio/phraseRecordings';
 import { CatalogError, LessonNotFoundError } from '@/domain/catalog/errors';
 import type { LessonDetail } from '@/domain/catalog/types';
+import type { ExerciseEngine } from '@/domain/exercises/exerciseEngine';
 import { createDefaultGetLessonUseCase } from '@/lib/catalog/createBrowseLessonCatalogUseCase';
+import { createDefaultExerciseEngine } from '@/lib/createExerciseEngine';
 import { createDefaultPronunciationRecorder } from '@/lib/pronunciation/createPronunciationRecorder';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 const defaultGetLesson = createDefaultGetLessonUseCase();
 const defaultCreateRecorder = () => createDefaultPronunciationRecorder();
+const defaultEngine = createDefaultExerciseEngine();
 
 export type PractiseScreenDeps = {
   getLesson?: typeof defaultGetLesson;
   createRecorder?: typeof defaultCreateRecorder;
+  exerciseEngine?: ExerciseEngine;
 };
 
 export default function PractiseScreen({
   getLesson = defaultGetLesson,
   createRecorder = defaultCreateRecorder,
+  exerciseEngine = defaultEngine,
 }: PractiseScreenDeps) {
+  const { user } = useAuth();
   const scheme = useColorScheme() ?? 'light';
   const colors = Colors[scheme];
-  const { lessonId, phraseId } = useLocalSearchParams<{ lessonId?: string; phraseId?: string }>();
+  const { lessonId, phraseId, mode } = useLocalSearchParams<{
+    lessonId?: string;
+    phraseId?: string;
+    mode?: string;
+  }>();
+  const exercisesMode = mode === 'exercises';
   const [lesson, setLesson] = useState<LessonDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(Boolean(lessonId));
@@ -106,8 +119,8 @@ export default function PractiseScreen({
         <ThemedView style={styles.empty}>
           <ThemedText type="title">Practise</ThemedText>
           <ThemedText>
-            Open a lesson and choose Practise pronunciation. Recordings stay on this device unless you
-            consent to upload.
+            Open a lesson to practise pronunciation or start its exercises. Recordings stay on this
+            device unless you consent to upload.
           </ThemedText>
         </ThemedView>
       </SafeAreaView>
@@ -123,7 +136,19 @@ export default function PractiseScreen({
             <ThemedText>{error}</ThemedText>
           </ThemedView>
         ) : null}
-        {lesson && phrase ? (
+        {lesson && exercisesMode ? (
+          user ? (
+            <ExerciseSequence
+              lesson={lesson}
+              userId={user.id}
+              engine={exerciseEngine}
+              onContinue={() => router.back()}
+            />
+          ) : (
+            <ThemedText>Sign in to practise exercises.</ThemedText>
+          )
+        ) : null}
+        {lesson && phrase && !exercisesMode ? (
           <View style={styles.session}>
             <ThemedText style={{ color: colors.icon }}>
               {lesson.title} · {phraseIndex + 1} of {lesson.phrases.length}
@@ -158,7 +183,7 @@ export default function PractiseScreen({
             ) : null}
           </View>
         ) : null}
-        {lesson && !loading && lesson.phrases.length === 0 ? (
+        {lesson && !loading && lesson.phrases.length === 0 && !exercisesMode ? (
           <ThemedText>This lesson has no phrases to practise yet.</ThemedText>
         ) : null}
       </ScrollView>
