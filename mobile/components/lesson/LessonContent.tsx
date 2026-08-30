@@ -1,7 +1,9 @@
 import { StyleSheet, View } from 'react-native';
 
+import { AudioPrompt } from '@/components/lesson/AudioPrompt';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { recordingsForPhrase } from '@/domain/audio/phraseRecordings';
 import type { LessonDetail } from '@/domain/catalog/types';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -30,11 +32,11 @@ export function LessonContent({ lesson }: { lesson: LessonDetail }) {
         <View key={phrase.id} style={[styles.block, { borderColor: colors.icon }]}>
           <ThemedText type="defaultSemiBold">{phrase.kalangaText}</ThemedText>
           <ThemedText>{phrase.englishTranslation}</ThemedText>
-          {phrase.audio.length > 0 ? (
-            <ThemedText style={{ color: colors.icon }}>
-              {phrase.audio.length} recording{phrase.audio.length === 1 ? '' : 's'} available
-            </ThemedText>
-          ) : null}
+          <AudioPrompt
+            languageId={lesson.languageId}
+            recordings={recordingsForPhrase(phrase)}
+            ttsText={phrase.kalangaText}
+          />
           {phrase.variations.map((variation) => (
             <View key={variation.id} style={styles.variation}>
               <ThemedText type="defaultSemiBold">{variation.registerLabel}</ThemedText>

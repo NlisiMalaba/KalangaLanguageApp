@@ -31,3 +31,4 @@ export type {
 export { LessonDownloadStatus } from './catalog';
 export type { BrowseLessonCatalogInput, CatalogLessonItem, CatalogLessonSummary, LessonDetail } from './catalog';
 export { createBrowseLessonCatalogUseCase, createGetLessonUseCase } from './catalog';
+export { createAudioPlayer, PlaybackRate } from './audio';

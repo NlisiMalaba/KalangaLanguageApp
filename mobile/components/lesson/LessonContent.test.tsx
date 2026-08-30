@@ -21,7 +21,16 @@ const lesson: LessonDetail = {
       englishTranslation: 'I want tomatoes',
       sortOrder: 0,
       variations: [{ id: 'var-1', kalangaText: 'Ndinoda tomato', registerLabel: 'Polite', audio: [] }],
-      audio: [],
+      audio: [
+        {
+          id: 'audio-1',
+          cdnUrl: 'https://cdn.example/a.mp3',
+          fileFormat: 'Mp3',
+          speakerGender: 'Unspecified',
+          dialectLabel: null,
+          durationMs: 800,
+        },
+      ],
     },
   ],
   exercises: [
@@ -46,5 +55,6 @@ describe('LessonContent', () => {
     expect(getByText('Polite')).toBeTruthy();
     expect(getByText('Flashcard')).toBeTruthy();
     expect(getByText('Translate: I want tomatoes')).toBeTruthy();
+    expect(getByText('Play')).toBeTruthy();
   });
 });
