@@ -21,9 +21,14 @@ jest.mock('expo-network', () => ({
 
 jest.mock('expo-file-system/legacy', () => ({
   documentDirectory: 'file:///docs/',
+  EncodingType: { UTF8: 'utf8', Base64: 'base64' },
   getInfoAsync: jest.fn(async () => ({ exists: false })),
   makeDirectoryAsync: jest.fn(async () => undefined),
   moveAsync: jest.fn(async () => undefined),
+  getFreeDiskStorageAsync: jest.fn(async () => 100 * 1024 * 1024),
+  readAsStringAsync: jest.fn(async () => ''),
+  writeAsStringAsync: jest.fn(async () => undefined),
+  deleteAsync: jest.fn(async () => undefined),
 }));
 
 jest.mock('expo-av', () => ({

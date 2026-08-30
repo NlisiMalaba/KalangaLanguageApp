@@ -58,6 +58,21 @@ export async function listContentPacks(
   });
 }
 
+export async function getContentPack(
+  languageId: EntityId,
+  packId: EntityId,
+  store?: LocalStore,
+): Promise<ContentPack | null> {
+  const tenant = requireLanguageId(languageId);
+  return withStore(store, async (db) => {
+    const row = await db.getFirst<ContentPackRow>(
+      `SELECT * FROM content_packs WHERE language_id = ? AND id = ?`,
+      [tenant, packId],
+    );
+    return row ? mapContentPack(row) : null;
+  });
+}
+
 export async function deleteContentPack(
   languageId: EntityId,
   packId: EntityId,

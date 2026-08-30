@@ -80,7 +80,11 @@ describe('ProfileScreen', () => {
     const getProgress = jest.fn(async () => progress);
     const { getByText, getByLabelText } = render(
       <AuthContext.Provider value={auth}>
-        <ProfileScreen getProgress={getProgress} />
+        <ProfileScreen
+          getProgress={getProgress}
+          listPacks={async () => []}
+          getStorageSummary={async () => ({ totalBytes: 0, packs: [] })}
+        />
       </AuthContext.Provider>,
     );
 

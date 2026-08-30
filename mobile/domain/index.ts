@@ -36,3 +36,4 @@ export { createPronunciationRecorder, finishPronunciationPractice, scorePronunci
 export { createExerciseEngine, gradeExercise, parseExercisePrompt, prepareExercises } from './exercises';
 export { createSpacedRepetitionEngine, recordAnswer } from './srs';
 export { createCompleteLessonUseCase, createGetProgressUseCase } from './progress';
+export { createContentPackDownloader, createStorageManager } from './contentPacks';
