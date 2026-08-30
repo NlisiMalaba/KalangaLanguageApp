@@ -43,21 +43,38 @@ export async function upsertSpacedRepetition(
   );
 }
 
+export async function findSpacedRepetition(
+  languageId: EntityId,
+  userId: EntityId,
+  phraseId: EntityId,
+  variationId?: EntityId | null,
+  store?: LocalStore,
+): Promise<SpacedRepetitionRecord | null> {
+  const tenant = requireLanguageId(languageId);
+  return withStore(store, async (db) => {
+    const row =
+      variationId == null
+        ? await db.getFirst<SpacedRepetitionRow>(
+            `SELECT * FROM spaced_repetition_records
+             WHERE language_id = ? AND user_id = ? AND phrase_id = ? AND variation_id IS NULL`,
+            [tenant, userId, phraseId],
+          )
+        : await db.getFirst<SpacedRepetitionRow>(
+            `SELECT * FROM spaced_repetition_records
+             WHERE language_id = ? AND user_id = ? AND phrase_id = ? AND variation_id = ?`,
+            [tenant, userId, phraseId, variationId],
+          );
+    return row ? mapSpacedRepetition(row) : null;
+  });
+}
+
 export async function findSpacedRepetitionForPhrase(
   languageId: EntityId,
   userId: EntityId,
   phraseId: EntityId,
   store?: LocalStore,
 ): Promise<SpacedRepetitionRecord | null> {
-  const tenant = requireLanguageId(languageId);
-  return withStore(store, async (db) => {
-    const row = await db.getFirst<SpacedRepetitionRow>(
-      `SELECT * FROM spaced_repetition_records
-       WHERE language_id = ? AND user_id = ? AND phrase_id = ? AND variation_id IS NULL`,
-      [tenant, userId, phraseId],
-    );
-    return row ? mapSpacedRepetition(row) : null;
-  });
+  return findSpacedRepetition(languageId, userId, phraseId, null, store);
 }
 
 export async function listDueSpacedRepetition(

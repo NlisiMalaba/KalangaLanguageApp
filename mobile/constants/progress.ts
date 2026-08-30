@@ -1,0 +1,3 @@
+export const MAX_LESSON_SCORE = 100;
+export const INTERMEDIATE_XP_THRESHOLD = 500;
+export const ADVANCED_XP_THRESHOLD = 2000;

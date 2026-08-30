@@ -4,6 +4,7 @@ import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { toast } from 'sonner-native';
 
+import { DailyReviewSequence } from '@/components/lesson/DailyReviewSequence';
 import { ExerciseSequence } from '@/components/lesson/ExerciseSequence';
 import { PronunciationPractice } from '@/components/pronunciation/PronunciationPractice';
 import { ThemedText } from '@/components/themed-text';
@@ -15,25 +16,40 @@ import { recordingsForPhrase } from '@/domain/audio/phraseRecordings';
 import { CatalogError, LessonNotFoundError } from '@/domain/catalog/errors';
 import type { LessonDetail } from '@/domain/catalog/types';
 import type { ExerciseEngine } from '@/domain/exercises/exerciseEngine';
+import type { CompleteLessonInput, CompleteLessonResult } from '@/domain/progress/completeLessonUseCase';
+import type { ReviewPrompt } from '@/domain/progress/dailyReview';
+import type { SpacedRepetitionEngine } from '@/domain/srs/spacedRepetitionEngine';
 import { createDefaultGetLessonUseCase } from '@/lib/catalog/createBrowseLessonCatalogUseCase';
+import { createDefaultCompleteLessonUseCase } from '@/lib/createCompleteLessonUseCase';
+import { createLoadReviewPrompts } from '@/lib/createLoadReviewPrompts';
 import { createDefaultExerciseEngine } from '@/lib/createExerciseEngine';
+import { createDefaultSpacedRepetitionEngine } from '@/lib/spacedRepetitionEngine';
 import { createDefaultPronunciationRecorder } from '@/lib/pronunciation/createPronunciationRecorder';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 const defaultGetLesson = createDefaultGetLessonUseCase();
 const defaultCreateRecorder = () => createDefaultPronunciationRecorder();
 const defaultEngine = createDefaultExerciseEngine();
+const defaultCompleteLesson = createDefaultCompleteLessonUseCase();
+const defaultSrs = createDefaultSpacedRepetitionEngine();
+const defaultLoadReview = createLoadReviewPrompts(defaultSrs);
 
 export type PractiseScreenDeps = {
   getLesson?: typeof defaultGetLesson;
   createRecorder?: typeof defaultCreateRecorder;
   exerciseEngine?: ExerciseEngine;
+  completeLesson?: (input: CompleteLessonInput) => Promise<CompleteLessonResult>;
+  srs?: SpacedRepetitionEngine;
+  loadReviewPrompts?: (input: { languageId: string; userId: string }) => Promise<ReviewPrompt[]>;
 };
 
 export default function PractiseScreen({
   getLesson = defaultGetLesson,
   createRecorder = defaultCreateRecorder,
   exerciseEngine = defaultEngine,
+  completeLesson = defaultCompleteLesson,
+  srs = defaultSrs,
+  loadReviewPrompts = defaultLoadReview,
 }: PractiseScreenDeps) {
   const { user } = useAuth();
   const scheme = useColorScheme() ?? 'light';
@@ -44,9 +60,10 @@ export default function PractiseScreen({
     mode?: string;
   }>();
   const exercisesMode = mode === 'exercises';
+  const reviewMode = mode === 'review';
   const [lesson, setLesson] = useState<LessonDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(Boolean(lessonId));
+  const [loading, setLoading] = useState(Boolean(lessonId) && !reviewMode);
   const [activePhraseId, setActivePhraseId] = useState<string | null>(
     typeof phraseId === 'string' ? phraseId : null,
   );
@@ -54,7 +71,7 @@ export default function PractiseScreen({
   useFocusEffect(
     useCallback(() => {
       const id = typeof lessonId === 'string' ? lessonId : '';
-      if (!id) {
+      if (!id || reviewMode) {
         setLesson(null);
         setLoading(false);
         setError(null);
@@ -100,7 +117,7 @@ export default function PractiseScreen({
       return () => {
         cancelled = true;
       };
-    }, [getLesson, lessonId, phraseId]),
+    }, [getLesson, lessonId, phraseId, reviewMode]),
   );
 
   const phraseIndex = useMemo(() => {
@@ -113,14 +130,14 @@ export default function PractiseScreen({
 
   const phrase = phraseIndex >= 0 ? lesson?.phrases[phraseIndex] ?? null : null;
 
-  if (!lessonId) {
+  if (!lessonId && !reviewMode) {
     return (
       <SafeAreaView style={styles.safe} edges={['bottom']}>
         <ThemedView style={styles.empty}>
           <ThemedText type="title">Practise</ThemedText>
           <ThemedText>
-            Open a lesson to practise pronunciation or start its exercises. Recordings stay on this
-            device unless you consent to upload.
+            Open a lesson to practise pronunciation or start its exercises. Use Daily review for due
+            phrases. Recordings stay on this device unless you consent to upload.
           </ThemedText>
         </ThemedView>
       </SafeAreaView>
@@ -136,6 +153,21 @@ export default function PractiseScreen({
             <ThemedText>{error}</ThemedText>
           </ThemedView>
         ) : null}
+        {reviewMode ? (
+          user ? (
+            <DailyReviewSequence
+              languageId={getLanguageId()}
+              userId={user.id}
+              loadPrompts={() =>
+                loadReviewPrompts({ languageId: getLanguageId(), userId: user.id })
+              }
+              srs={srs}
+              onContinue={() => router.back()}
+            />
+          ) : (
+            <ThemedText>Sign in to review due phrases.</ThemedText>
+          )
+        ) : null}
         {lesson && exercisesMode ? (
           user ? (
             <ExerciseSequence
@@ -143,6 +175,15 @@ export default function PractiseScreen({
               userId={user.id}
               engine={exerciseEngine}
               onContinue={() => router.back()}
+              onLessonComplete={({ score }) =>
+                completeLesson({
+                  languageId: lesson.languageId,
+                  userId: user.id,
+                  lessonId: lesson.id,
+                  score,
+                  xpReward: lesson.xpReward,
+                })
+              }
             />
           ) : (
             <ThemedText>Sign in to practise exercises.</ThemedText>

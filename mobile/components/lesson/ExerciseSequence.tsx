@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { toast } from 'sonner-native';
 
@@ -15,6 +15,7 @@ import {
   prepareExercises,
   type PreparedExercise,
 } from '@/domain/exercises/prepareExercises';
+import type { CompleteLessonResult } from '@/domain/progress/completeLessonUseCase';
 import type { ExerciseAttempt, GradeResult } from '@/domain/exercises/types';
 
 export function ExerciseSequence({
@@ -22,11 +23,17 @@ export function ExerciseSequence({
   userId,
   engine,
   onContinue,
+  onLessonComplete,
 }: {
   lesson: LessonDetail;
   userId: EntityId;
   engine: ExerciseEngine;
   onContinue: () => void;
+  onLessonComplete?: (input: {
+    score: number;
+    correctCount: number;
+    totalCount: number;
+  }) => Promise<CompleteLessonResult>;
 }) {
   const fallback = prepareExercises(exerciseSourcesFromLesson(lesson));
   const [queue, setQueue] = useState<PreparedExercise[]>(fallback);
@@ -34,14 +41,18 @@ export function ExerciseSequence({
   const [result, setResult] = useState<GradeResult | null>(null);
   const [correctCount, setCorrectCount] = useState(0);
   const [complete, setComplete] = useState(false);
+  const [completion, setCompletion] = useState<CompleteLessonResult | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
+  const correctCountRef = useRef(0);
 
   const reset = useCallback(() => {
     setIndex(0);
     setResult(null);
     setCorrectCount(0);
+    correctCountRef.current = 0;
     setComplete(false);
+    setCompletion(null);
     setSelectedIndex(null);
   }, []);
 
@@ -84,7 +95,8 @@ export function ExerciseSequence({
       .then((grade) => {
         setResult(grade);
         if (grade.correct) {
-          setCorrectCount((count) => count + 1);
+          correctCountRef.current += 1;
+          setCorrectCount(correctCountRef.current);
         }
       })
       .catch((error) => {
@@ -98,7 +110,27 @@ export function ExerciseSequence({
 
   const onNext = () => {
     if (index + 1 >= queue.length) {
-      setComplete(true);
+      const totalCount = queue.length;
+      const score = totalCount === 0 ? 0 : Math.round((correctCountRef.current / totalCount) * 100);
+      if (!onLessonComplete) {
+        setComplete(true);
+        return;
+      }
+
+      setBusy(true);
+      void onLessonComplete({ score, correctCount: correctCountRef.current, totalCount })
+        .then((result) => {
+          setCompletion(result);
+          setComplete(true);
+        })
+        .catch((error) => {
+          const message = error instanceof Error ? error.message : 'Could not save lesson progress.';
+          toast.error(message);
+          setComplete(true);
+        })
+        .finally(() => {
+          setBusy(false);
+        });
       return;
     }
 
@@ -119,6 +151,10 @@ export function ExerciseSequence({
           xpReward: lesson.xpReward,
           correctCount,
           totalCount: queue.length,
+          xpAwarded: completion?.xpAwarded,
+          totalXp: completion?.totalXp,
+          xpGranted: completion?.xpGranted,
+          currentStreak: completion?.currentStreak,
         }}
         onContinue={onContinue}
         onPracticeAgain={reset}

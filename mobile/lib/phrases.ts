@@ -34,6 +34,21 @@ export async function upsertPhrase(
   );
 }
 
+export async function getPhrase(
+  languageId: EntityId,
+  phraseId: EntityId,
+  store?: LocalStore,
+): Promise<Phrase | null> {
+  const tenant = requireLanguageId(languageId);
+  return withStore(store, async (db) => {
+    const row = await db.getFirst<PhraseRow>(
+      `SELECT * FROM phrases WHERE language_id = ? AND id = ?`,
+      [tenant, phraseId],
+    );
+    return row ? mapPhrase(row) : null;
+  });
+}
+
 export async function listPhrasesForLesson(
   languageId: EntityId,
   lessonId: EntityId,

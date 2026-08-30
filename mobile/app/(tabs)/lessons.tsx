@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { toast } from 'sonner-native';
 
 import { LessonCatalog } from '@/components/lesson/LessonCatalog';
+import { ThemedText } from '@/components/themed-text';
 import { MAX_CATALOG_TAKE } from '@/constants/catalog';
 import { getLanguageId } from '@/constants/config';
 import { useAuth } from '@/ctx/AuthContext';
@@ -81,6 +82,13 @@ export default function LessonsScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView>
+        <Pressable
+          onPress={() => router.push({ pathname: '/practise', params: { mode: 'review' } })}
+          accessibilityRole="button"
+          accessibilityLabel="Daily review"
+          style={styles.review}>
+          <ThemedText type="link">Daily review</ThemedText>
+        </Pressable>
         <LessonCatalog
           selectedLevel={selectedLevel}
           selectedCategory={selectedCategory}
@@ -105,5 +113,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  review: {
+    paddingHorizontal: 24,
+    paddingTop: 16,
   },
 });

@@ -33,6 +33,21 @@ export async function upsertLanguageVariation(
   );
 }
 
+export async function getLanguageVariation(
+  languageId: EntityId,
+  variationId: EntityId,
+  store?: LocalStore,
+): Promise<LanguageVariation | null> {
+  const tenant = requireLanguageId(languageId);
+  return withStore(store, async (db) => {
+    const row = await db.getFirst<LanguageVariationRow>(
+      `SELECT * FROM language_variations WHERE language_id = ? AND id = ?`,
+      [tenant, variationId],
+    );
+    return row ? mapLanguageVariation(row) : null;
+  });
+}
+
 export async function listVariationsForPhrase(
   languageId: EntityId,
   phraseId: EntityId,

@@ -34,3 +34,5 @@ export { createBrowseLessonCatalogUseCase, createGetLessonUseCase } from './cata
 export { createAudioPlayer, PlaybackRate } from './audio';
 export { createPronunciationRecorder, finishPronunciationPractice, scorePronunciation } from './pronunciation';
 export { createExerciseEngine, gradeExercise, parseExercisePrompt, prepareExercises } from './exercises';
+export { createSpacedRepetitionEngine, recordAnswer } from './srs';
+export { createCompleteLessonUseCase } from './progress';

@@ -9,6 +9,10 @@ export type LessonCompleteStats = {
   xpReward: number;
   correctCount: number;
   totalCount: number;
+  xpAwarded?: number;
+  totalXp?: number;
+  xpGranted?: boolean;
+  currentStreak?: number;
 };
 
 export function LessonCompleteScreen({
@@ -34,7 +38,18 @@ export function LessonCompleteScreen({
       <ThemedText accessibilityLabel={`${stats.correctCount} of ${stats.totalCount} correct`}>
         {stats.correctCount}/{stats.totalCount} correct
       </ThemedText>
-      <ThemedText style={{ color: colors.icon }}>{stats.xpReward} XP available when progress is saved</ThemedText>
+      {stats.xpReward > 0 ? (
+        <ThemedText style={{ color: colors.icon }}>
+          {stats.xpGranted === false
+            ? `XP already awarded · ${stats.totalXp ?? stats.xpReward} total`
+            : `+${stats.xpAwarded ?? stats.xpReward} XP${stats.totalXp != null ? ` · ${stats.totalXp} total` : ''}`}
+        </ThemedText>
+      ) : null}
+      {stats.currentStreak != null ? (
+        <ThemedText accessibilityLabel={`Streak ${stats.currentStreak} days`}>
+          {stats.currentStreak} day streak
+        </ThemedText>
+      ) : null}
       <Pressable onPress={onContinue} accessibilityRole="button" accessibilityLabel="Continue">
         <ThemedText type="link">Continue</ThemedText>
       </Pressable>
