@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { toast } from 'sonner-native';
 
@@ -11,7 +11,6 @@ import { getLanguageId } from '@/constants/config';
 import { CatalogError, LessonNotFoundError } from '@/domain/catalog/errors';
 import type { LessonDetail } from '@/domain/catalog/types';
 import { createDefaultGetLessonUseCase } from '@/lib/catalog/createBrowseLessonCatalogUseCase';
-import { useFocusEffect } from 'expo-router';
 
 const getLesson = createDefaultGetLessonUseCase();
 
@@ -74,7 +73,14 @@ export default function LessonScreen() {
             <ThemedText>{error}</ThemedText>
           </ThemedView>
         ) : null}
-        {lesson ? <LessonContent lesson={lesson} /> : null}
+        {lesson ? (
+          <LessonContent
+            lesson={lesson}
+            onPractisePhrase={(phraseId) =>
+              router.push({ pathname: '/practise', params: { lessonId: lesson.id, phraseId } })
+            }
+          />
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );

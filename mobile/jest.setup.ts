@@ -22,6 +22,8 @@ jest.mock('expo-network', () => ({
 jest.mock('expo-file-system/legacy', () => ({
   documentDirectory: 'file:///docs/',
   getInfoAsync: jest.fn(async () => ({ exists: false })),
+  makeDirectoryAsync: jest.fn(async () => undefined),
+  moveAsync: jest.fn(async () => undefined),
 }));
 
 jest.mock('expo-av', () => ({
@@ -34,8 +36,22 @@ jest.mock('expo-av', () => ({
       setPositionAsync: jest.fn(),
       setRateAsync: jest.fn(),
     })),
+    Recording: jest.fn().mockImplementation(() => ({
+      prepareToRecordAsync: jest.fn(),
+      startAsync: jest.fn(),
+      stopAndUnloadAsync: jest.fn(async () => ({ isLoaded: true, durationMillis: 0 })),
+      getURI: jest.fn(() => 'file:///tmp/rec.m4a'),
+      setOnRecordingStatusUpdate: jest.fn(),
+    })),
+    RecordingOptionsPresets: { HIGH_QUALITY: {} },
     setAudioModeAsync: jest.fn(),
+    getPermissionsAsync: jest.fn(async () => ({ granted: false, status: 'denied' })),
+    requestPermissionsAsync: jest.fn(async () => ({ granted: false, status: 'denied' })),
   },
+}));
+
+jest.mock('expo-linking', () => ({
+  openSettings: jest.fn(async () => undefined),
 }));
 
 jest.mock('expo-speech', () => ({

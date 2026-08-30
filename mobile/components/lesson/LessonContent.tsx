@@ -1,16 +1,25 @@
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AudioPrompt } from '@/components/lesson/AudioPrompt';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { recordingsForPhrase } from '@/domain/audio/phraseRecordings';
 import type { LessonDetail } from '@/domain/catalog/types';
+import type { EntityId } from '@/domain/entities';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
-export function LessonContent({ lesson }: { lesson: LessonDetail }) {
+export function LessonContent({
+  lesson,
+  onPractisePhrase,
+}: {
+  lesson: LessonDetail;
+  onPractisePhrase?: (phraseId: EntityId) => void;
+}) {
   const scheme = useColorScheme() ?? 'light';
   const colors = Colors[scheme];
+
+  const firstPhrase = lesson.phrases[0];
 
   return (
     <ThemedView style={styles.container}>
@@ -28,10 +37,26 @@ export function LessonContent({ lesson }: { lesson: LessonDetail }) {
 
       <ThemedText type="subtitle">Phrases</ThemedText>
       {lesson.phrases.length === 0 ? <ThemedText>No phrases in this lesson yet.</ThemedText> : null}
+      {onPractisePhrase && firstPhrase ? (
+        <Pressable
+          onPress={() => onPractisePhrase(firstPhrase.id)}
+          accessibilityRole="button"
+          accessibilityLabel="Practise pronunciation">
+          <ThemedText type="link">Practise pronunciation</ThemedText>
+        </Pressable>
+      ) : null}
       {lesson.phrases.map((phrase) => (
         <View key={phrase.id} style={[styles.block, { borderColor: colors.icon }]}>
           <ThemedText type="defaultSemiBold">{phrase.kalangaText}</ThemedText>
           <ThemedText>{phrase.englishTranslation}</ThemedText>
+          {onPractisePhrase ? (
+            <Pressable
+              onPress={() => onPractisePhrase(phrase.id)}
+              accessibilityRole="button"
+              accessibilityLabel={`Practise ${phrase.kalangaText}`}>
+              <ThemedText type="link">Practise this phrase</ThemedText>
+            </Pressable>
+          ) : null}
           <AudioPrompt
             languageId={lesson.languageId}
             recordings={recordingsForPhrase(phrase)}

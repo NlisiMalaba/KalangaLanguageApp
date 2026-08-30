@@ -1,0 +1,7 @@
+export const PRONUNCIATION_SCORE_MIN = 0;
+export const PRONUNCIATION_SCORE_MAX = 100;
+export const PRONUNCIATION_EXCELLENT_MIN = 85;
+export const PRONUNCIATION_GOOD_MIN = 60;
+export const PRONUNCIATION_DURATION_WEIGHT = 0.4;
+export const PRONUNCIATION_ENERGY_WEIGHT = 0.6;
+export const LOCAL_PRONUNCIATION_DIRECTORY = 'offline/pronunciation';

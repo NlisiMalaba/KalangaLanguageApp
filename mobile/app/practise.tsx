@@ -1,10 +1,189 @@
-import { PlaceholderScreen } from '@/components/placeholder-screen';
+import { useCallback, useMemo, useState } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { toast } from 'sonner-native';
 
-export default function PractiseScreen() {
+import { PronunciationPractice } from '@/components/pronunciation/PronunciationPractice';
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
+import { getLanguageId } from '@/constants/config';
+import { Colors } from '@/constants/theme';
+import { recordingsForPhrase } from '@/domain/audio/phraseRecordings';
+import { CatalogError, LessonNotFoundError } from '@/domain/catalog/errors';
+import type { LessonDetail } from '@/domain/catalog/types';
+import { createDefaultGetLessonUseCase } from '@/lib/catalog/createBrowseLessonCatalogUseCase';
+import { createDefaultPronunciationRecorder } from '@/lib/pronunciation/createPronunciationRecorder';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+
+const defaultGetLesson = createDefaultGetLessonUseCase();
+const defaultCreateRecorder = () => createDefaultPronunciationRecorder();
+
+export type PractiseScreenDeps = {
+  getLesson?: typeof defaultGetLesson;
+  createRecorder?: typeof defaultCreateRecorder;
+};
+
+export default function PractiseScreen({
+  getLesson = defaultGetLesson,
+  createRecorder = defaultCreateRecorder,
+}: PractiseScreenDeps) {
+  const scheme = useColorScheme() ?? 'light';
+  const colors = Colors[scheme];
+  const { lessonId, phraseId } = useLocalSearchParams<{ lessonId?: string; phraseId?: string }>();
+  const [lesson, setLesson] = useState<LessonDetail | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(Boolean(lessonId));
+  const [activePhraseId, setActivePhraseId] = useState<string | null>(
+    typeof phraseId === 'string' ? phraseId : null,
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      const id = typeof lessonId === 'string' ? lessonId : '';
+      if (!id) {
+        setLesson(null);
+        setLoading(false);
+        setError(null);
+        return;
+      }
+
+      let cancelled = false;
+      setLoading(true);
+      setError(null);
+
+      void getLesson({ languageId: getLanguageId(), lessonId: id })
+        .then((detail) => {
+          if (cancelled) {
+            return;
+          }
+
+          setLesson(detail);
+          const requested = typeof phraseId === 'string' ? phraseId : null;
+          const first = detail.phrases[0]?.id ?? null;
+          setActivePhraseId(
+            requested && detail.phrases.some((phrase) => phrase.id === requested) ? requested : first,
+          );
+        })
+        .catch((caught) => {
+          const message =
+            caught instanceof LessonNotFoundError
+              ? caught.message
+              : caught instanceof CatalogError
+                ? caught.message
+                : 'Could not load this lesson.';
+          if (!cancelled) {
+            setLesson(null);
+            setError(message);
+            toast.error(message);
+          }
+        })
+        .finally(() => {
+          if (!cancelled) {
+            setLoading(false);
+          }
+        });
+
+      return () => {
+        cancelled = true;
+      };
+    }, [getLesson, lessonId, phraseId]),
+  );
+
+  const phraseIndex = useMemo(() => {
+    if (!lesson || !activePhraseId) {
+      return -1;
+    }
+
+    return lesson.phrases.findIndex((item) => item.id === activePhraseId);
+  }, [lesson, activePhraseId]);
+
+  const phrase = phraseIndex >= 0 ? lesson?.phrases[phraseIndex] ?? null : null;
+
+  if (!lessonId) {
+    return (
+      <SafeAreaView style={styles.safe} edges={['bottom']}>
+        <ThemedView style={styles.empty}>
+          <ThemedText type="title">Practise</ThemedText>
+          <ThemedText>
+            Open a lesson and choose Practise pronunciation. Recordings stay on this device unless you
+            consent to upload.
+          </ThemedText>
+        </ThemedView>
+      </SafeAreaView>
+    );
+  }
+
   return (
-    <PlaceholderScreen
-      title="Practise"
-      description="Exercises and on-device pronunciation practice will run here."
-    />
+    <SafeAreaView style={styles.safe} edges={['bottom']}>
+      <ScrollView contentContainerStyle={styles.scroll}>
+        {loading ? <ActivityIndicator /> : null}
+        {error ? (
+          <ThemedView>
+            <ThemedText>{error}</ThemedText>
+          </ThemedView>
+        ) : null}
+        {lesson && phrase ? (
+          <View style={styles.session}>
+            <ThemedText style={{ color: colors.icon }}>
+              {lesson.title} · {phraseIndex + 1} of {lesson.phrases.length}
+            </ThemedText>
+            <PronunciationPractice
+              languageId={lesson.languageId}
+              phrase={phrase}
+              recordings={recordingsForPhrase(phrase)}
+              createRecorder={createRecorder}
+            />
+            {lesson.phrases.length > 1 ? (
+              <View style={styles.nav}>
+                <Pressable
+                  onPress={() => setActivePhraseId(lesson.phrases[phraseIndex - 1]?.id ?? phrase.id)}
+                  disabled={phraseIndex <= 0}
+                  accessibilityRole="button"
+                  accessibilityLabel="Previous phrase"
+                  accessibilityState={{ disabled: phraseIndex <= 0 }}>
+                  <ThemedText type={phraseIndex <= 0 ? 'default' : 'link'}>Previous</ThemedText>
+                </Pressable>
+                <Pressable
+                  onPress={() => setActivePhraseId(lesson.phrases[phraseIndex + 1]?.id ?? phrase.id)}
+                  disabled={phraseIndex >= lesson.phrases.length - 1}
+                  accessibilityRole="button"
+                  accessibilityLabel="Next phrase"
+                  accessibilityState={{ disabled: phraseIndex >= lesson.phrases.length - 1 }}>
+                  <ThemedText type={phraseIndex >= lesson.phrases.length - 1 ? 'default' : 'link'}>
+                    Next
+                  </ThemedText>
+                </Pressable>
+              </View>
+            ) : null}
+          </View>
+        ) : null}
+        {lesson && !loading && lesson.phrases.length === 0 ? (
+          <ThemedText>This lesson has no phrases to practise yet.</ThemedText>
+        ) : null}
+      </ScrollView>
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safe: {
+    flex: 1,
+  },
+  scroll: {
+    padding: 24,
+    gap: 16,
+  },
+  empty: {
+    flex: 1,
+    padding: 24,
+    gap: 12,
+  },
+  session: {
+    gap: 16,
+  },
+  nav: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+});

@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 
 import { LessonContent } from '@/components/lesson/LessonContent';
 import type { LessonDetail } from '@/domain/catalog/types';
@@ -56,5 +56,15 @@ describe('LessonContent', () => {
     expect(getByText('Flashcard')).toBeTruthy();
     expect(getByText('Translate: I want tomatoes')).toBeTruthy();
     expect(getByText('Play')).toBeTruthy();
+  });
+
+  it('offers pronunciation practice for a phrase', () => {
+    const onPractisePhrase = jest.fn();
+    const { getByText } = render(
+      <LessonContent lesson={lesson} onPractisePhrase={onPractisePhrase} />,
+    );
+
+    fireEvent.press(getByText('Practise this phrase'));
+    expect(onPractisePhrase).toHaveBeenCalledWith('phrase-1');
   });
 });
