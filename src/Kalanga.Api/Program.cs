@@ -13,8 +13,15 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+if (builder.Environment.IsDevelopment())
+{
+    // launchSettings localhost URLs are not reachable from a physical phone / Expo Go.
+    builder.WebHost.UseUrls("http://0.0.0.0:5077", "https://localhost:7253");
+}
+
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<DomainExceptionHandler>();
+builder.Services.AddExceptionHandler<UnhandledExceptionHandler>();
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -86,10 +93,6 @@ if (app.Environment.IsDevelopment())
 else if (!app.Environment.IsEnvironment("Testing"))
 {
     app.UseHsts();
-}
-
-if (!app.Environment.IsEnvironment("Testing"))
-{
     app.UseHttpsRedirection();
 }
 app.UseAuthentication();

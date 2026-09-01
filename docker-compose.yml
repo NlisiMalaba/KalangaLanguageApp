@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: kalanga-postgres
+    environment:
+      POSTGRES_DB: kalanga
+      POSTGRES_USER: kalanga
+      POSTGRES_PASSWORD: kalanga
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kalanga -d kalanga"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - kalanga-pgdata:/var/lib/postgresql/data
+
+volumes:
+  kalanga-pgdata:

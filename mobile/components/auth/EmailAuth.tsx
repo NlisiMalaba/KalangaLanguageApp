@@ -10,9 +10,16 @@ import {
 import { toast } from 'sonner-native';
 
 import { useAuth } from '@/ctx/AuthContext';
-import { AuthError } from '@/domain/auth/errors';
 
 type Mode = 'signIn' | 'signUp';
+
+function toUserMessage(error: unknown): string {
+  if (error instanceof Error && error.message.trim().length > 0) {
+    return error.message;
+  }
+
+  return 'Something went wrong. Please try again.';
+}
 
 export default function EmailAuth({ onBack }: { onBack: () => void }) {
   const { signIn, signUp } = useAuth();
@@ -36,8 +43,7 @@ export default function EmailAuth({ onBack }: { onBack: () => void }) {
         await signUp(email, password, displayName);
       }
     } catch (error) {
-      const message = error instanceof AuthError ? error.message : 'Something went wrong. Please try again.';
-      toast.error(message);
+      toast.error(toUserMessage(error));
     } finally {
       setBusy(false);
     }

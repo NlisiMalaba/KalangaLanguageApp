@@ -6,6 +6,7 @@ using Kalanga.Infrastructure.Persistence;
 using Kalanga.Infrastructure.Persistence.Repositories;
 using Kalanga.Infrastructure.Security;
 using Kalanga.Infrastructure.Storage;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -73,6 +74,8 @@ public static class DependencyInjection
         CancellationToken cancellationToken = default)
     {
         await using var scope = services.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<KalangaDbContext>();
+        await db.Database.MigrateAsync(cancellationToken);
         var seeder = scope.ServiceProvider.GetRequiredService<DevelopmentLanguageSeeder>();
         await seeder.EnsureKalangaAsync(cancellationToken);
     }

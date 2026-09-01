@@ -12,7 +12,10 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.kalanga.languageapp",
       "infoPlist": {
-        "NSMicrophoneUsageDescription": "This app needs microphone access for pronunciation practice."
+        "NSMicrophoneUsageDescription": "This app needs microphone access for pronunciation practice.",
+        "NSAppTransportSecurity": {
+          "NSAllowsLocalNetworking": true
+        }
       }
     },
     "android": {

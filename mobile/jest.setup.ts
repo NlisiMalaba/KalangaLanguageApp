@@ -12,6 +12,10 @@ jest.mock('expo-sqlite', () => ({
   }),
 }));
 
+jest.mock('expo-crypto', () => ({
+  getRandomBytes: (byteCount: number) => Uint8Array.from({ length: byteCount }, (_, i) => i % 256),
+}));
+
 jest.mock('expo-secure-store', () => ({
   WHEN_UNLOCKED: 'WHEN_UNLOCKED',
   setItemAsync: jest.fn(),

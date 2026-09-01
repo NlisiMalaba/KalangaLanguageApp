@@ -74,7 +74,15 @@ async function parseBody(response: Response): Promise<unknown> {
   }
 
   const text = await response.text();
-  return text.length === 0 ? null : (JSON.parse(text) as unknown);
+  if (text.length === 0) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(text) as unknown;
+  } catch {
+    throw new AuthApiError(response.status, `Request failed (${response.status}).`);
+  }
 }
 
 async function send(path: string, options: ApiRequestOptions, accessToken: string | null): Promise<Response> {
@@ -105,6 +113,18 @@ async function send(path: string, options: ApiRequestOptions, accessToken: strin
           ? undefined
           : JSON.stringify(options.body),
     });
+  } catch (error) {
+    if (error instanceof AuthApiError || error instanceof SessionExpiredError) {
+      throw error;
+    }
+
+    const aborted = error instanceof Error && error.name === 'AbortError';
+    throw new AuthApiError(
+      0,
+      aborted
+        ? 'The API timed out. Confirm Kalanga.Api is running.'
+        : 'Cannot reach the API. Start Kalanga.Api and use your computer’s LAN address, not localhost, from a phone.',
+    );
   } finally {
     clearTimeout(timeout);
   }

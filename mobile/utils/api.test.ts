@@ -1,4 +1,4 @@
-import { SessionExpiredError } from '@/domain/auth/errors';
+import { AuthApiError, SessionExpiredError } from '@/domain/auth/errors';
 import { apiRequest } from '@/utils/api';
 import { resetTokenSessionForTests, setTokenSession } from '@/utils/tokenSession';
 
@@ -102,5 +102,13 @@ describe('apiRequest', () => {
       });
 
     await expect(apiRequest('/lessons', { method: 'GET' })).rejects.toBeInstanceOf(SessionExpiredError);
+  });
+
+  it('maps a failed fetch to AuthApiError', async () => {
+    (global.fetch as jest.Mock).mockRejectedValue(new TypeError('Network request failed'));
+
+    await expect(
+      apiRequest('/auth/register', { method: 'POST', skipAuth: true, skipRefresh: true }),
+    ).rejects.toBeInstanceOf(AuthApiError);
   });
 });
