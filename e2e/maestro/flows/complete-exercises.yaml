@@ -1,0 +1,26 @@
+appId: com.kalanga.languageapp
+---
+- tapOn: "Start exercises"
+- repeat:
+    timeout: 120000
+    while:
+      notVisible: "Lesson complete"
+    commands:
+      - tapOn:
+          text: "Reveal translation"
+          optional: true
+      - tapOn:
+          text: "I remembered"
+          optional: true
+      - tapOn:
+          text: "Check translation"
+          optional: true
+      - tapOn:
+          text: "Continue"
+          optional: true
+      - tapOn:
+          text: "Finish"
+          optional: true
+- assertVisible: "Lesson complete"
+- assertVisible: "Streak 1 days"
+- tapOn: "Continue"

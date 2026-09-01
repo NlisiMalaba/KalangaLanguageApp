@@ -136,6 +136,15 @@ export default function ProfileScreen({
         <ThemedText type="subtitle">{user.displayName}</ThemedText>
         <ThemedText style={{ color: colors.icon }}>{user.email}</ThemedText>
 
+        {user.role === Role.Reviewer || user.role === Role.Admin ? (
+          <Pressable
+            onPress={() => router.push('/review/queue')}
+            accessibilityRole="button"
+            accessibilityLabel="Review queue">
+            <ThemedText type="link">Review queue</ThemedText>
+          </Pressable>
+        ) : null}
+
         {user.role === Role.Contributor || user.role === Role.Admin ? (
           <Pressable
             onPress={() => router.push('/contributor/new')}

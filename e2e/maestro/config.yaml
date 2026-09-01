@@ -1,0 +1,5 @@
+appId: com.kalanga.languageapp
+flows:
+  - learner-first-lesson.yaml
+  - offline-mode.yaml
+  - contributor-review.yaml

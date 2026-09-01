@@ -1,0 +1,7 @@
+appId: com.kalanga.languageapp
+---
+- tapOn: "Profile"
+- tapOn: "Sign out"
+- extendedWaitUntil:
+    visible: "Continue with email"
+    timeout: 20000

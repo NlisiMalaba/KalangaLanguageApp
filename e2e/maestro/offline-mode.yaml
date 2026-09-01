@@ -1,0 +1,33 @@
+appId: com.kalanga.languageapp
+env:
+  LEARNER_EMAIL: learner.e2e@example.test
+  LEARNER_PASSWORD: Password1!
+  PACK_NAME: Beginner Everyday
+  LESSON_TITLE: Greetings
+---
+# Download pack → offline complete lesson → local progress → online sync.
+- launchApp
+- runFlow:
+    file: flows/sign-in.yaml
+    env:
+      EMAIL: ${LEARNER_EMAIL}
+      PASSWORD: ${LEARNER_PASSWORD}
+- tapOn: "Profile"
+- tapOn: "Download ${PACK_NAME}"
+- extendedWaitUntil:
+    visible: "Download 100 percent"
+    timeout: 120000
+- setAirplaneMode: true
+- tapOn: "Lessons"
+- tapOn: ".*${LESSON_TITLE}.*"
+- runFlow: flows/complete-exercises.yaml
+- tapOn: "Profile"
+- assertVisible: "Streak 1 days"
+- assertVisible: "Not synced yet"
+- setAirplaneMode: false
+- tapOn: "Lessons"
+- tapOn: "Profile"
+- extendedWaitUntil:
+    notVisible: "Not synced yet"
+    timeout: 60000
+- assertVisible: "Last synced.*"

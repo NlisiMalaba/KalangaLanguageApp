@@ -1,0 +1,18 @@
+appId: com.kalanga.languageapp
+---
+- runFlow: open-email-auth.yaml
+- tapOn:
+    text: "Switch to sign in"
+    optional: true
+- tapOn: "Email"
+- inputText: ${EMAIL}
+- tapOn: "Password"
+- inputText: ${PASSWORD}
+- tapOn: "Sign in"
+- runFlow:
+    when:
+      visible: "Welcome"
+    file: onboarding.yaml
+- extendedWaitUntil:
+    visible: "Lessons"
+    timeout: 30000

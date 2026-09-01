@@ -62,6 +62,7 @@ export default function EmailAuth({ onBack }: { onBack: () => void }) {
           value={displayName}
           onChangeText={setDisplayName}
           autoCapitalize="words"
+          accessibilityLabel="Display name"
         />
       ) : null}
       <TextInput
@@ -72,7 +73,7 @@ export default function EmailAuth({ onBack }: { onBack: () => void }) {
         onChangeText={setEmail}
         autoCapitalize="none"
         keyboardType="email-address"
-        autoComplete="email"
+        accessibilityLabel="Email"
       />
       <TextInput
         style={styles.input}
@@ -82,12 +83,14 @@ export default function EmailAuth({ onBack }: { onBack: () => void }) {
         onChangeText={setPassword}
         secureTextEntry
         autoComplete={mode === 'signIn' ? 'password' : 'new-password'}
+        accessibilityLabel="Password"
       />
       <Pressable
         style={[styles.button, busy && styles.buttonDisabled]}
         onPress={() => void submit()}
         disabled={busy}
-        accessibilityRole="button">
+        accessibilityRole="button"
+        accessibilityLabel={mode === 'signIn' ? 'Sign in' : 'Create account'}>
         {busy ? (
           <ActivityIndicator color="#fff" />
         ) : (
@@ -96,7 +99,8 @@ export default function EmailAuth({ onBack }: { onBack: () => void }) {
       </Pressable>
       <Pressable
         onPress={() => setMode(mode === 'signIn' ? 'signUp' : 'signIn')}
-        accessibilityRole="button">
+        accessibilityRole="button"
+        accessibilityLabel={mode === 'signIn' ? 'Switch to create account' : 'Switch to sign in'}>
         <Text style={styles.switch}>
           {mode === 'signIn' ? 'Need an account? Create one' : 'Already have an account? Sign in'}
         </Text>

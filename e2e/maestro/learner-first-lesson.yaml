@@ -1,0 +1,23 @@
+appId: com.kalanga.languageapp
+env:
+  LEARNER_EMAIL: learner.e2e@example.test
+  LEARNER_PASSWORD: Password1!
+  LEARNER_NAME: E2E Learner
+  PACK_NAME: Beginner Everyday
+  LESSON_TITLE: Greetings
+---
+# Register → onboarding → browse catalog → download content pack → complete lesson → XP and streak.
+- launchApp
+- runFlow: flows/sign-up.yaml
+- runFlow: flows/onboarding.yaml
+- tapOn: "Profile"
+- tapOn: "Download ${PACK_NAME}"
+- extendedWaitUntil:
+    visible: "Download 100 percent"
+    timeout: 120000
+- tapOn: "Lessons"
+- tapOn: ".*${LESSON_TITLE}.*"
+- runFlow: flows/complete-exercises.yaml
+- tapOn: "Profile"
+- assertVisible: ".*XP"
+- assertVisible: "Streak 1 days"

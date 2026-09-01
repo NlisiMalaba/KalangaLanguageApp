@@ -87,7 +87,8 @@ export default function OnboardingScreen() {
         style={[styles.cta, busy && styles.disabled]}
         onPress={() => void complete()}
         disabled={busy}
-        accessibilityRole="button">
+        accessibilityRole="button"
+        accessibilityLabel="Finish onboarding">
         <Text style={styles.ctaText}>Continue</Text>
       </Pressable>
     </ThemedView>
@@ -108,6 +109,7 @@ function Chip({
       onPress={onPress}
       style={[styles.chip, selected && styles.chipSelected]}
       accessibilityRole="button"
+      accessibilityLabel={label}
       accessibilityState={{ selected }}>
       <Text style={[styles.chipText, selected && styles.chipTextSelected]}>{label}</Text>
     </Pressable>

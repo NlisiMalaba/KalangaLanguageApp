@@ -11,6 +11,7 @@ public sealed class RepositoryPortTenantIsolationTests
         nameof(ITokenService),
         nameof(IContentPackManifestSigner),
         nameof(IUnitOfWork),
+        nameof(ILanguageRepository),
     ];
 
     [Fact]

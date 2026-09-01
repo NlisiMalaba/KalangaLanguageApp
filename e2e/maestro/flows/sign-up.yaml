@@ -1,0 +1,14 @@
+appId: com.kalanga.languageapp
+---
+- runFlow: open-email-auth.yaml
+- tapOn: "Switch to create account"
+- tapOn: "Display name"
+- inputText: ${LEARNER_NAME}
+- tapOn: "Email"
+- inputText: ${LEARNER_EMAIL}
+- tapOn: "Password"
+- inputText: ${LEARNER_PASSWORD}
+- tapOn: "Create account"
+- extendedWaitUntil:
+    visible: "Welcome"
+    timeout: 30000

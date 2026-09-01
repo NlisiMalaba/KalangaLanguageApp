@@ -1,0 +1,61 @@
+appId: com.kalanga.languageapp
+env:
+  LEARNER_EMAIL: learner.e2e@example.test
+  LEARNER_PASSWORD: Password1!
+  CONTRIBUTOR_EMAIL: contributor.e2e@example.test
+  CONTRIBUTOR_PASSWORD: Password1!
+  REVIEWER_EMAIL: reviewer.e2e@example.test
+  REVIEWER_PASSWORD: Password1!
+  NEW_LESSON_TITLE: E2E Market
+  NEW_LESSON_KALANGA: Ndinoda tomato
+  NEW_LESSON_ENGLISH: I want tomatoes
+---
+# Contributor create/submit → reviewer approve → lesson visible in catalog.
+- launchApp
+- runFlow:
+    file: flows/sign-in.yaml
+    env:
+      EMAIL: ${CONTRIBUTOR_EMAIL}
+      PASSWORD: ${CONTRIBUTOR_PASSWORD}
+- tapOn: "Profile"
+- tapOn: "Create lesson"
+- tapOn: "Lesson title"
+- inputText: ${NEW_LESSON_TITLE}
+- tapOn: "Add phrase"
+- tapOn: "Phrase 1 Kalanga"
+- inputText: ${NEW_LESSON_KALANGA}
+- tapOn: "Phrase 1 English"
+- inputText: ${NEW_LESSON_ENGLISH}
+- tapOn: "Add exercise"
+- tapOn: "Exercise 1 prompt"
+- inputText: ${NEW_LESSON_KALANGA}
+- tapOn: "Exercise 1 answer"
+- inputText: ${NEW_LESSON_ENGLISH}
+- tapOn: "Save draft"
+- extendedWaitUntil:
+    visible: "Draft saved."
+    timeout: 30000
+- tapOn: "Submit for review"
+- extendedWaitUntil:
+    visible: "Submitted for review."
+    timeout: 30000
+- runFlow: flows/sign-out.yaml
+- runFlow:
+    file: flows/sign-in.yaml
+    env:
+      EMAIL: ${REVIEWER_EMAIL}
+      PASSWORD: ${REVIEWER_PASSWORD}
+- tapOn: "Profile"
+- tapOn: "Review queue"
+- tapOn: "Approve ${NEW_LESSON_TITLE}"
+- extendedWaitUntil:
+    visible: "Lesson published."
+    timeout: 20000
+- runFlow: flows/sign-out.yaml
+- runFlow:
+    file: flows/sign-in.yaml
+    env:
+      EMAIL: ${LEARNER_EMAIL}
+      PASSWORD: ${LEARNER_PASSWORD}
+- tapOn: "Lessons"
+- assertVisible: ".*${NEW_LESSON_TITLE}.*"

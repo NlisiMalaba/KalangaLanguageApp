@@ -83,12 +83,15 @@ if (app.Environment.IsDevelopment())
         options.WithTitle("Kalanga API");
     });
 }
-else
+else if (!app.Environment.IsEnvironment("Testing"))
 {
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    app.UseHttpsRedirection();
+}
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();

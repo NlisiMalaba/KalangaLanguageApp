@@ -1,0 +1,9 @@
+appId: com.kalanga.languageapp
+---
+- tapOn: "Beginner"
+- tapOn: "Heritage"
+- tapOn: "Greetings"
+- tapOn: "Finish onboarding"
+- extendedWaitUntil:
+    visible: "Lessons"
+    timeout: 20000
