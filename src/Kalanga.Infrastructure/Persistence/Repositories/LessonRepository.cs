@@ -42,6 +42,7 @@ internal sealed class LessonRepository(KalangaDbContext db) : ILessonRepository
         string? category,
         int skip,
         int take,
+        bool? isScenario = null,
         CancellationToken cancellationToken = default)
     {
         TenantGuard.EnsureSkip(skip);
@@ -61,6 +62,11 @@ internal sealed class LessonRepository(KalangaDbContext db) : ILessonRepository
         if (!string.IsNullOrWhiteSpace(category))
         {
             query = query.Where(lesson => lesson.Category == category);
+        }
+
+        if (isScenario is { } scenario)
+        {
+            query = query.Where(lesson => lesson.IsScenario == scenario);
         }
 
         var records = await query

@@ -1,0 +1,2 @@
+export const DEFAULT_REQUESTS_TAKE = 50;
+export const MAX_REQUEST_TITLE_LENGTH = 255;

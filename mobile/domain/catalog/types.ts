@@ -69,6 +69,7 @@ export type BrowseLessonCatalogInput = {
   userId: EntityId;
   level?: Level | null;
   category?: string | null;
+  isScenario?: boolean | null;
   skip?: number;
   take?: number;
 };

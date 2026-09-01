@@ -22,10 +22,11 @@ public sealed class LessonsController : ControllerBase
         [FromQuery] string? category,
         [FromQuery] int skip = 0,
         [FromQuery] int take = 50,
+        [FromQuery] bool? isScenario = null,
         CancellationToken cancellationToken = default)
     {
         var result = await browseCatalog.ExecuteAsync(
-            new BrowseLessonCatalogCommand(User.GetLanguageId(), level, category, skip, take),
+            new BrowseLessonCatalogCommand(User.GetLanguageId(), level, category, skip, take, isScenario),
             cancellationToken);
 
         return Ok(result);

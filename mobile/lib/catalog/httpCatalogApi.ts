@@ -58,6 +58,11 @@ export function createHttpCatalogApi(): LessonCatalogApi {
       if (filter.category) {
         params.set('category', filter.category);
       }
+      if (filter.isScenario === true) {
+        params.set('isScenario', 'true');
+      } else if (filter.isScenario === false) {
+        params.set('isScenario', 'false');
+      }
 
       const body = await apiRequest<unknown>(`/lessons?${params.toString()}`, { method: 'GET' });
       const items = mapBrowseLessonCatalogResponse(body);

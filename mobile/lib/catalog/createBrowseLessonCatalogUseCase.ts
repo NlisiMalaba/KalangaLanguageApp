@@ -35,6 +35,7 @@ export function createDefaultBrowseLessonCatalogUseCase(
       const lessons = await listPublishedLessons(languageId, store, {
         level: filter.level,
         category: filter.category,
+        isScenario: filter.isScenario,
       });
       return lessons.map(toCatalogSummary);
     },

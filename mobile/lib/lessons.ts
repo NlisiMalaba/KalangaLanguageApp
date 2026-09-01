@@ -8,6 +8,7 @@ import { boolToSql, mapLesson, type LessonRow } from '@/lib/mappers';
 export type LessonCatalogFilter = {
   level?: Level | null;
   category?: string | null;
+  isScenario?: boolean | null;
 };
 
 const UPSERT_SQL = `
@@ -79,7 +80,7 @@ export async function listPublishedLessons(
   const category = filter.category?.trim() ? filter.category.trim() : null;
   return withStore(store, async (db) => {
     const clauses = ['language_id = ?', 'status = ?'];
-    const params: Array<string> = [tenant, LessonStatus.Published];
+    const params: Array<string | number> = [tenant, LessonStatus.Published];
 
     if (filter.level) {
       clauses.push('level = ?');
@@ -89,6 +90,11 @@ export async function listPublishedLessons(
     if (category) {
       clauses.push('category = ?');
       params.push(category);
+    }
+
+    if (filter.isScenario === true || filter.isScenario === false) {
+      clauses.push('is_scenario = ?');
+      params.push(boolToSql(filter.isScenario));
     }
 
     const rows = await db.getAll<LessonRow>(

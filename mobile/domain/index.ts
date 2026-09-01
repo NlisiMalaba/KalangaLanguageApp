@@ -38,5 +38,11 @@ export { createSpacedRepetitionEngine, recordAnswer } from './srs';
 export { createCompleteLessonUseCase, createGetProgressUseCase } from './progress';
 export { createContentPackDownloader, createStorageManager } from './contentPacks';
 export { createSaveContributorLessonUseCase, createSubmitContributorLessonUseCase } from './contributor';
+export {
+  createFulfillRequestUseCase,
+  createListRequestsUseCase,
+  createSubmitRequestUseCase,
+  createUpvoteRequestUseCase,
+} from './requests';
 export { createSyncService } from './sync';
 export type { SyncService } from './sync';

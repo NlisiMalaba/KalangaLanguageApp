@@ -21,6 +21,7 @@ public sealed class BrowseLessonCatalogUseCase(ILessonRepository lessons) : Brow
             category,
             command.Skip,
             command.Take,
+            command.IsScenario,
             cancellationToken);
 
         var items = published

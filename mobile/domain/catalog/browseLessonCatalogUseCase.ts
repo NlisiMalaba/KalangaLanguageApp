@@ -28,6 +28,7 @@ function toFilter(input: BrowseLessonCatalogInput): CatalogFilter {
   return {
     level: input.level ?? null,
     category,
+    isScenario: input.isScenario ?? null,
     skip,
     take,
   };

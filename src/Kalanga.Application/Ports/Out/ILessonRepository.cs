@@ -19,6 +19,7 @@ public interface ILessonRepository
         string? category,
         int skip,
         int take,
+        bool? isScenario = null,
         CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<Lesson>> FindPendingReviewAsync(

@@ -6,6 +6,7 @@ import type { CatalogLessonSummary, LessonDetail } from './types';
 export type CatalogFilter = {
   level?: Level | null;
   category?: string | null;
+  isScenario?: boolean | null;
   skip: number;
   take: number;
 };

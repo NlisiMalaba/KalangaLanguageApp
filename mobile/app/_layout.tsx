@@ -28,6 +28,7 @@ export default function RootLayout() {
               <Stack.Screen name="lesson/[id]" options={{ title: 'Lesson' }} />
               <Stack.Screen name="practise" options={{ title: 'Practise' }} />
               <Stack.Screen name="contributor/[id]" options={{ title: 'Lesson builder' }} />
+              <Stack.Screen name="conversation" options={{ title: 'Conversation' }} />
             </Stack>
             <StatusBar style="auto" />
             <Toaster />

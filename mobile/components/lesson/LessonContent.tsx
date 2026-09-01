@@ -13,10 +13,14 @@ export function LessonContent({
   lesson,
   onPractisePhrase,
   onStartExercises,
+  hideTitle = false,
+  hideScenario = false,
 }: {
   lesson: LessonDetail;
   onPractisePhrase?: (phraseId: EntityId) => void;
   onStartExercises?: () => void;
+  hideTitle?: boolean;
+  hideScenario?: boolean;
 }) {
   const scheme = useColorScheme() ?? 'light';
   const colors = Colors[scheme];
@@ -25,12 +29,14 @@ export function LessonContent({
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText type="title">{lesson.title}</ThemedText>
-      <ThemedText style={{ color: colors.icon }}>
-        {lesson.level} · {lesson.category} · {lesson.xpReward} XP
-      </ThemedText>
+      {hideTitle ? null : <ThemedText type="title">{lesson.title}</ThemedText>}
+      {hideTitle ? null : (
+        <ThemedText style={{ color: colors.icon }}>
+          {lesson.level} · {lesson.category} · {lesson.xpReward} XP
+        </ThemedText>
+      )}
 
-      {lesson.isScenario && lesson.scenarioContext ? (
+      {!hideScenario && lesson.isScenario && lesson.scenarioContext ? (
         <View style={[styles.scenario, { borderColor: colors.icon }]} accessibilityLabel="Scenario context">
           <ThemedText type="defaultSemiBold">Scenario</ThemedText>
           <ThemedText>{lesson.scenarioContext}</ThemedText>

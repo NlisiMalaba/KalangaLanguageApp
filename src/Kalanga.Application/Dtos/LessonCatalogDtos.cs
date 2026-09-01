@@ -8,7 +8,8 @@ public sealed record BrowseLessonCatalogCommand(
     Level? Level,
     string? Category,
     int Skip,
-    int Take);
+    int Take,
+    bool? IsScenario = null);
 
 public sealed record LessonCatalogItemDto(
     LessonId LessonId,

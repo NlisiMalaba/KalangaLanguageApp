@@ -28,4 +28,12 @@ describe('listPublishedLessons', () => {
     expect(store.lastQuery?.sql).toContain('category = ?');
     expect(store.lastQuery?.params).toEqual(['lang-1', LessonStatus.Published, Level.Beginner, 'Everyday']);
   });
+
+  it('filters sqlite scenario lessons', async () => {
+    const store = createRecordingStore();
+    await listPublishedLessons('lang-1', store, { isScenario: true });
+
+    expect(store.lastQuery?.sql).toContain('is_scenario = ?');
+    expect(store.lastQuery?.params).toEqual(['lang-1', LessonStatus.Published, 1]);
+  });
 });
