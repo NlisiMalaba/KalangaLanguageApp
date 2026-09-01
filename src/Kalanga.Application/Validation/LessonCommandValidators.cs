@@ -40,6 +40,29 @@ public sealed class SaveLessonDraftCommandValidator : AbstractValidator<SaveLess
         RuleFor(x => x.Category).NotEmpty().MaximumLength(100);
         RuleFor(x => x.ScenarioContext).MaximumLength(4000).When(x => x.ScenarioContext is not null);
         RuleFor(x => x.XpReward).GreaterThan(0);
+        RuleForEach(x => x.Phrases).ChildRules(phrase =>
+        {
+            phrase.RuleFor(item => item.KalangaText).NotEmpty();
+            phrase.RuleFor(item => item.EnglishTranslation).NotEmpty();
+            phrase.RuleFor(item => item.SortOrder).GreaterThanOrEqualTo(0);
+        }).When(x => x.Phrases is not null);
+        RuleForEach(x => x.Exercises).ChildRules(exercise =>
+        {
+            exercise.RuleFor(item => item.PromptData).NotEmpty();
+            exercise.RuleFor(item => item.CorrectAnswer).NotEmpty();
+            exercise.RuleFor(item => item.SortOrder).GreaterThanOrEqualTo(0);
+            exercise.RuleFor(item => item.ExerciseType).IsInEnum();
+        }).When(x => x.Exercises is not null);
+    }
+}
+
+public sealed class GetLessonDraftCommandValidator : AbstractValidator<GetLessonDraftCommand>
+{
+    public GetLessonDraftCommandValidator()
+    {
+        RuleFor(x => x.LanguageId.Value).NotEmpty();
+        RuleFor(x => x.ActorUserId.Value).NotEmpty();
+        RuleFor(x => x.LessonId.Value).NotEmpty();
     }
 }
 

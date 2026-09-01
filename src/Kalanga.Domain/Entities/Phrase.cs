@@ -42,10 +42,11 @@ public sealed class Phrase
         string kalangaText,
         string englishTranslation,
         int sortOrder,
-        DateTimeOffset utcNow)
+        DateTimeOffset utcNow,
+        PhraseId? id = null)
     {
         return new Phrase(
-            PhraseId.New(),
+            id ?? PhraseId.New(),
             languageId,
             lessonId,
             Guard.RequiredText(kalangaText, nameof(kalangaText)),

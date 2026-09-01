@@ -188,6 +188,17 @@ public sealed class PhraseNotFoundException : DomainException
     public ValueObjects.PhraseId PhraseId { get; }
 }
 
+public sealed class ExerciseNotFoundException : DomainException
+{
+    public ExerciseNotFoundException(ValueObjects.ExerciseId exerciseId)
+        : base($"Exercise '{exerciseId}' was not found.")
+    {
+        ExerciseId = exerciseId;
+    }
+
+    public ValueObjects.ExerciseId ExerciseId { get; }
+}
+
 public sealed class VariationNotFoundException : DomainException
 {
     public VariationNotFoundException(ValueObjects.LanguageVariationId variationId)

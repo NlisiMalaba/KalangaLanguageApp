@@ -25,6 +25,8 @@ public sealed record BrowseLessonCatalogResult(IReadOnlyList<LessonCatalogItemDt
 
 public sealed record GetLessonCommand(LanguageId LanguageId, LessonId LessonId);
 
+public sealed record GetLessonDraftCommand(LanguageId LanguageId, UserId ActorUserId, LessonId LessonId);
+
 public sealed record AudioRefDto(
     AudioRecordingId AudioRecordingId,
     string CdnUrl,
@@ -68,3 +70,5 @@ public sealed record LessonDetailDto(
     IReadOnlyList<ExerciseDetailDto> Exercises);
 
 public sealed record GetLessonResult(LessonDetailDto Lesson);
+
+public sealed record GetLessonDraftResult(LessonDetailDto Lesson, LessonStatus Status);

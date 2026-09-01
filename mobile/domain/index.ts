@@ -37,5 +37,6 @@ export { createExerciseEngine, gradeExercise, parseExercisePrompt, prepareExerci
 export { createSpacedRepetitionEngine, recordAnswer } from './srs';
 export { createCompleteLessonUseCase, createGetProgressUseCase } from './progress';
 export { createContentPackDownloader, createStorageManager } from './contentPacks';
+export { createSaveContributorLessonUseCase, createSubmitContributorLessonUseCase } from './contributor';
 export { createSyncService } from './sync';
 export type { SyncService } from './sync';

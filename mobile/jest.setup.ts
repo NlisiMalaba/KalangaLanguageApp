@@ -1,3 +1,11 @@
+import { configure } from '@testing-library/react-native';
+
+configure({ asyncUtilTimeout: 10_000 });
+
+jest.mock('expo-document-picker', () => ({
+  getDocumentAsync: jest.fn(async () => ({ canceled: true, assets: [] })),
+}));
+
 jest.mock('expo-sqlite', () => ({
   openDatabaseAsync: jest.fn(async () => {
     throw new Error('expo-sqlite is not available in unit tests; inject a LocalStore.');

@@ -73,6 +73,7 @@ public sealed class DomainExceptionHandler(IProblemDetailsService problemDetails
             InvalidAudioUploadException => (StatusCodes.Status422UnprocessableEntity, "Unprocessable Entity"),
             InvalidAudioRecordingException => (StatusCodes.Status422UnprocessableEntity, "Unprocessable Entity"),
             PhraseNotFoundException => (StatusCodes.Status404NotFound, "Not Found"),
+            ExerciseNotFoundException => (StatusCodes.Status404NotFound, "Not Found"),
             AudioRecordingNotFoundException => (StatusCodes.Status404NotFound, "Not Found"),
             VariationNotFoundException => (StatusCodes.Status404NotFound, "Not Found"),
             AudioStorageUnavailableException => (StatusCodes.Status503ServiceUnavailable, "Service Unavailable"),

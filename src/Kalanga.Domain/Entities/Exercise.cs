@@ -31,7 +31,7 @@ public sealed class Exercise
 
     public LessonId LessonId { get; }
 
-    public ExerciseType ExerciseType { get; }
+    public ExerciseType ExerciseType { get; private set; }
 
     public string PromptData { get; private set; }
 
@@ -48,10 +48,11 @@ public sealed class Exercise
         string promptData,
         string correctAnswer,
         int sortOrder,
-        DateTimeOffset utcNow)
+        DateTimeOffset utcNow,
+        ExerciseId? id = null)
     {
         return new Exercise(
-            ExerciseId.New(),
+            id ?? ExerciseId.New(),
             languageId,
             lessonId,
             exerciseType,
@@ -59,5 +60,13 @@ public sealed class Exercise
             Guard.RequiredText(correctAnswer, nameof(correctAnswer)),
             Guard.NonNegative(sortOrder, nameof(sortOrder)),
             utcNow);
+    }
+
+    public void Update(ExerciseType exerciseType, string promptData, string correctAnswer, int sortOrder)
+    {
+        ExerciseType = exerciseType;
+        PromptData = Guard.RequiredText(promptData, nameof(promptData));
+        CorrectAnswer = Guard.RequiredText(correctAnswer, nameof(correctAnswer));
+        SortOrder = Guard.NonNegative(sortOrder, nameof(sortOrder));
     }
 }

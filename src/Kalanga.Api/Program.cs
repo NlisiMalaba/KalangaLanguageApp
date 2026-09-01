@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using Kalanga.Api.Authorization;
 using Kalanga.Api.ExceptionHandling;
 using Kalanga.Api.Middleware;
@@ -14,7 +15,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<DomainExceptionHandler>();
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 builder.Services.AddOpenApi();
 
 builder.Services.AddApplication();

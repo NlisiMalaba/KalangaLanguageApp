@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { useFocusEffect } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { toast } from 'sonner-native';
 
@@ -16,6 +16,7 @@ import type { SyncStatus } from '@/domain/sync/types';
 import type { StorageSummary } from '@/domain/contentPacks/storage';
 import type { ContentPackListItem, DownloadContentPackResult, PackDownloadProgress } from '@/domain/contentPacks/types';
 import { ContentPackError } from '@/domain/contentPacks/errors';
+import { Role } from '@/domain/enums';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useSpeakingListeningStats } from '@/hooks/useSpeakingListeningStats';
 import { createDefaultGetProgressUseCase } from '@/lib/createGetProgressUseCase';
@@ -134,6 +135,15 @@ export default function ProfileScreen({
         <ThemedText type="title">Profile</ThemedText>
         <ThemedText type="subtitle">{user.displayName}</ThemedText>
         <ThemedText style={{ color: colors.icon }}>{user.email}</ThemedText>
+
+        {user.role === Role.Contributor || user.role === Role.Admin ? (
+          <Pressable
+            onPress={() => router.push('/contributor/new')}
+            accessibilityRole="button"
+            accessibilityLabel="Create lesson">
+            <ThemedText type="link">Create lesson</ThemedText>
+          </Pressable>
+        ) : null}
 
         <View style={styles.section}>
           <ThemedText type="subtitle">Sync</ThemedText>

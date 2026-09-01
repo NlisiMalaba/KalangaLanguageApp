@@ -23,6 +23,7 @@ public static class DependencyInjection
         services.AddScoped<BrowseLessonCatalogUseCase>();
         services.AddScoped<BrowseLessonCatalogPort, CachingBrowseLessonCatalogUseCase>();
         services.AddScoped<GetLessonPort, GetLessonUseCase>();
+        services.AddScoped<GetLessonDraftPort, GetLessonDraftUseCase>();
         services.AddScoped<CreateLessonPort, CreateLessonUseCase>();
         services.AddScoped<SaveLessonDraftPort, SaveLessonDraftUseCase>();
         services.AddScoped<SubmitLessonForReviewPort, SubmitLessonForReviewUseCase>();

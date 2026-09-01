@@ -66,7 +66,13 @@ public sealed class LessonDraftSaveRoundTripPropertyTests(PostgresFixture postgr
                         sample.InitialLevel,
                         sample.InitialCategory));
 
-                var saved = await new SaveLessonDraftUseCase(users, lessons).ExecuteAsync(
+                var saved = await new SaveLessonDraftUseCase(
+                    users,
+                    lessons,
+                    new PhraseRepository(db),
+                    new LanguageVariationRepository(db),
+                    new ExerciseRepository(db),
+                    new EfUnitOfWork(db)).ExecuteAsync(
                     new SaveLessonDraftCommand(
                         languageId,
                         contributor,

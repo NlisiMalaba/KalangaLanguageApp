@@ -18,6 +18,7 @@ import {
 export type ApiRequestOptions = {
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   body?: unknown;
+  formData?: FormData;
   timeoutMs?: number;
   skipAuth?: boolean;
   skipRefresh?: boolean;
@@ -82,9 +83,12 @@ async function send(path: string, options: ApiRequestOptions, accessToken: strin
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   const headers: Record<string, string> = {
     Accept: 'application/json',
-    'Content-Type': 'application/json',
     [CORRELATION_HEADER]: createCorrelationId(),
   };
+
+  if (!options.formData) {
+    headers['Content-Type'] = 'application/json';
+  }
 
   if (accessToken) {
     headers.Authorization = `Bearer ${accessToken}`;
@@ -95,7 +99,11 @@ async function send(path: string, options: ApiRequestOptions, accessToken: strin
       method: options.method,
       signal: controller.signal,
       headers,
-      body: options.body === undefined ? undefined : JSON.stringify(options.body),
+      body: options.formData
+        ? options.formData
+        : options.body === undefined
+          ? undefined
+          : JSON.stringify(options.body),
     });
   } finally {
     clearTimeout(timeout);

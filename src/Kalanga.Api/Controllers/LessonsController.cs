@@ -44,6 +44,20 @@ public sealed class LessonsController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("{id:guid}/draft")]
+    [Authorize(Policy = AuthPolicies.ContributorOrAdmin)]
+    public async Task<ActionResult<GetLessonDraftResult>> GetDraft(
+        Guid id,
+        [FromServices] GetLessonDraftPort getDraft,
+        CancellationToken cancellationToken)
+    {
+        var result = await getDraft.ExecuteAsync(
+            new GetLessonDraftCommand(User.GetLanguageId(), User.GetUserId(), LessonId.From(id)),
+            cancellationToken);
+
+        return Ok(result);
+    }
+
     [HttpGet("{id:guid}/phrases")]
     public async Task<ActionResult<IReadOnlyList<PhraseDetailDto>>> Phrases(
         Guid id,
@@ -110,7 +124,22 @@ public sealed class LessonsController : ControllerBase
                 request.Category,
                 request.IsScenario,
                 request.ScenarioContext,
-                request.XpReward ?? DomainRules.DefaultLessonXpReward),
+                request.XpReward ?? DomainRules.DefaultLessonXpReward,
+                (request.Phrases ?? []).Select(static item => new DraftPhraseItem(
+                    item.PhraseId,
+                    item.KalangaText,
+                    item.EnglishTranslation,
+                    item.SortOrder,
+                    (item.Variations ?? []).Select(static variation => new DraftVariationItem(
+                        variation.VariationId,
+                        variation.KalangaText,
+                        variation.RegisterLabel)).ToList())).ToList(),
+                (request.Exercises ?? []).Select(static item => new DraftExerciseItem(
+                    item.ExerciseId,
+                    item.ExerciseType,
+                    item.PromptData,
+                    item.CorrectAnswer,
+                    item.SortOrder)).ToList()),
             cancellationToken);
 
         return Ok(result);

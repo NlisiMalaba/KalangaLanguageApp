@@ -37,14 +37,21 @@ public sealed class LanguageVariation
         PhraseId phraseId,
         string kalangaText,
         string registerLabel,
-        DateTimeOffset utcNow)
+        DateTimeOffset utcNow,
+        LanguageVariationId? id = null)
     {
         return new LanguageVariation(
-            LanguageVariationId.New(),
+            id ?? LanguageVariationId.New(),
             languageId,
             phraseId,
             Guard.RequiredText(kalangaText, nameof(kalangaText)),
             Guard.Required(registerLabel, nameof(registerLabel), 50),
             utcNow);
+    }
+
+    public void Update(string kalangaText, string registerLabel)
+    {
+        KalangaText = Guard.RequiredText(kalangaText, nameof(kalangaText));
+        RegisterLabel = Guard.Required(registerLabel, nameof(registerLabel), 50);
     }
 }
